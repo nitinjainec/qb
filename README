@@ -1,0 +1,6 @@
+1. Considered simplicity over efficiency. However, efficiency can be easily achieved by just plugging in new class in existing design. For e.g. currently CSVReader reads file line by line which is in-efficient, we could easly write new class which reads chunk of data and process it to return line.
+
+2. Currently processor and writer are within single thread. It could be extendend to run them in parallel threads.
+
+3. 
+
