@@ -23,16 +23,7 @@ class CSVParser : public IParser {
       util::trim (field);
       fields.push_back (field);
     }
-    RecordPtr record;
-    try {
-      record = RecordFactory::create (fields);
-    }
-    catch (const std::exception& ex) {
-      std::cout << "Caught in parser: " << ex.what () << std::endl;
-      std::cout << buffer << std::endl;
-      exit (0);
-    }
-    return record;
+    return RecordFactory::create (fields);
   }
 
 public:
@@ -55,4 +46,44 @@ public:
   }
 };
 
+class BinaryParser : public IParser {
+  IReaderPtr reader;
+  Buffer buffer;
+  size_t length;
+  size_t idx;
+
+  RecordPtr parseBufferToRecord (const Buffer &buffer = "") {   
+    return RecordFactory::create (buffer, length);
+  }
+
+  bool canParseBufferToRecord () {
+    return RecordFactory::canCreate (buffer, length);
+  }
+  
+public:
+  BinaryParser (const IReaderPtr &reader)
+    : reader (reader)
+    , length (0)
+    , idx (0)
+  {
+    DLOG ("BinaryParser constructed");
+    buffer.reserve (BUFFER_SIZE * 2);
+  }
+  
+  RecordPtr nextRecord () {
+    assert (!eor ());
+    if (canParseBufferToRecord ())
+      return parseBufferToRecord ();
+    
+    const Buffer & buff = reader->getData ();
+    length += reader->length ();
+    buffer.append (buff);
+    
+    return parseBufferToRecord (buff);
+  }
+
+  bool eor () {
+    return reader->eod ();
+  }
+};
 #endif

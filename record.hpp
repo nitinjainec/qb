@@ -5,6 +5,33 @@
 #include <string.h>
 
 struct Quote : public Record {
+  Quote () {}
+
+  Quote (const Buffer &buffer) {
+    const char *ch = buffer.c_str ();
+
+    time = ch;
+    ch += time.size ();
+
+    memcpy (symbol, ch, sizeof (symbol));
+    ch += sizeof (symbol);
+
+    const double *dptr = reinterpret_cast <const double *> (ch);
+    bid = *dptr;
+    ch += sizeof (double);
+
+    dptr = reinterpret_cast <const double *> (ch);
+    ask = *dptr;
+    ch += sizeof (double);
+    
+    const uint32_t *uiptr = reinterpret_cast <const uint32_t *> (ch);
+    bsize = *uiptr;
+    ch += sizeof (uint32_t);
+
+    uiptr = reinterpret_cast <const uint32_t *> (ch);
+    asize = *uiptr;
+  }
+
   Quote (const std::string &time,
 	 const std::string &symbol_str,
 	 const double &bid,
@@ -18,16 +45,19 @@ struct Quote : public Record {
     , asize (asize)
   { strcpy (symbol, symbol_str.c_str ()); }
 
-  size_t size () {
-    return time.size () + sizeof (symbol) + sizeof (double)
-      + sizeof (double) + sizeof (uint32_t) + sizeof (uint32_t);
+  static size_t size () {
+    return sizeof (RecordType) + Datetime::size () + sizeof (char [5])
+      + sizeof (double) + sizeof (double) + sizeof (uint32_t)
+      + sizeof (uint32_t);
   }
   
   Buffer toBinaryBuffer () {
-    //time.toBinaryBuffer () + symbol +
     char buffer[size ()];
     char *dest = buffer;
-    
+
+    *dest = recordType ();
+    dest += sizeof (RecordType);
+
     memcpy (dest, &time, time.size ());
     dest += time.size ();
 
@@ -48,7 +78,22 @@ struct Quote : public Record {
 
     return buffer;
   }
+
+  std::string toString () {
+    return time.toString ()
+      + "," + symbol
+      + "," + std::to_string (bid)
+      + "," + std::to_string (ask)
+      + "," + std::to_string (bsize)
+      + "," + std::to_string (asize);
+  }
   
+  static constexpr RecordType recordType () {
+    return QUOTE;
+  }
+
+  size_t vsize () { return size (); }
+
   Datetime time;
   char symbol[5];
   double bid;
@@ -58,6 +103,24 @@ struct Quote : public Record {
 };
 
 struct Trade : public Record {
+  Trade () {}
+
+  Trade (const Buffer &buffer) {
+    const char *ch = buffer.c_str ();
+
+    time = ch;
+    ch += time.size ();
+
+    memcpy (symbol, ch, sizeof (symbol));
+    ch += sizeof (symbol);
+
+    const double *dptr = reinterpret_cast <const double *> (ch);
+    price = *dptr;
+    ch += sizeof (double);
+
+    condition = *ch;
+  }
+
   Trade (const std::string &time,
 	 const std::string &symbol_str,
 	 const double &price,
@@ -75,13 +138,17 @@ struct Trade : public Record {
     , condition (0xff)
   { strcpy (symbol, symbol_str.c_str ()); }
 
-  size_t size () {
-    return time.size () + sizeof (symbol) + sizeof (double) + sizeof (char);
+  static size_t size () {
+    return sizeof (RecordType) + Datetime::size () + sizeof (char [5])
+      + sizeof (double) + sizeof (char);
   }
   
   Buffer toBinaryBuffer () {
     char buffer[size ()];
     char *dest = buffer;
+
+    *dest = recordType ();
+    dest += sizeof (RecordType);
     
     memcpy (dest, &time, time.size ());
     dest += time.size ();
@@ -95,30 +162,65 @@ struct Trade : public Record {
     *dest = condition;
     return buffer;
   }
+
+  std::string toString () {
+    return (condition == 0xff)
+      ? time.toString () + "," + symbol + "," + std::to_string (price)
+      : (time.toString () + "," + symbol + "," + std::to_string (price)
+	 + "," + std::string (condition, 1));
+  }
+
+  static constexpr RecordType recordType () {
+    return TRADE;
+  }
+  
+  size_t vsize () { return size (); }
   
   Datetime time;
-  char symbol [5];
+  char symbol[5];
   double price;
   char condition;
 };
 
 struct Signal : public Record {
+  Signal () {}
+  Signal (const Buffer &buffer) {
+    const char *ch = buffer.c_str ();
+
+    time = ch;
+    ch += time.size ();
+
+    memcpy (symbol, ch, sizeof (symbol));
+    ch += sizeof (symbol);
+
+    const double *dptr = reinterpret_cast <const double *> (ch);
+    value = *dptr;
+    ch += sizeof (double);
+
+    const uint32_t *uiptr = reinterpret_cast <const uint32_t *> (ch);
+    code = *uiptr;
+  }
+
   Signal (const std::string &time,
 	  const std::string &symbol_str,
 	  const double &value,
-	  const int code)
+	  const uint32_t code)
     : time (time)
     , value (value)
     , code (code)
   { strcpy (symbol, symbol_str.c_str ()); }
 
-  size_t size () {
-    return time.size () + sizeof (symbol) + sizeof (double) + sizeof (uint32_t);
+  static size_t size () {
+    return sizeof (RecordType) + Datetime::size () + sizeof (char[5])
+      + sizeof (double) + sizeof (uint32_t);
   }
   
   Buffer toBinaryBuffer () {
     char buffer[size ()];
     char *dest = buffer;
+
+    *dest = recordType ();
+    dest += sizeof (RecordType);
     
     memcpy (dest, &time, time.size ());
     dest += time.size ();
@@ -132,11 +234,24 @@ struct Signal : public Record {
     memcpy (dest, &code, sizeof (code));
     return buffer;
   }
-    
+
+  std::string toString () {
+    return time.toString ()
+      + "," + symbol
+      + "," + std::to_string (value)
+      + "," + std::to_string (code);
+  }
+
+  static constexpr RecordType recordType () {
+    return SIGNAL;
+  }
+
+  size_t vsize () { return size (); }
+ 
   Datetime time;
-  char symbol [5];
+  char symbol[5];
   double value;
-  int code;
+  uint32_t code;
 };
 
 #endif

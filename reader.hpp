@@ -45,6 +45,11 @@ public:
     return data[idx++];
   }
 
+  /* Returns length of characters */
+  size_t length () {
+    return data[idx-1].size ();
+  }
+
   /* Returns true for end of data */
   bool eod () {
     if (idx < data.size ())
@@ -54,6 +59,60 @@ public:
   }
 
   ~CSVReader () {
+    file.close ();
+  }
+};
+
+class BinaryReader : public IReader {
+  std::ifstream file;
+  char buffer [BUFFER_SIZE+1];
+  int32_t count;
+  bool data_read;
+
+  void readData () {
+    if (file.eof ())
+      return;
+
+    DLOG("Reading data");
+    file.read (buffer, BUFFER_SIZE);
+    count = file.gcount ();
+    buffer [count] = '\0';
+    data_read = false;
+    DLOG("Read " + std::to_string (count) + " bytes");
+  }
+
+public:
+  BinaryReader (const std::string &filename)
+    : file (filename.c_str (), std::ios::in | std::ios::binary)
+  {
+    if (file.fail ()) {
+      throw std::runtime_error ("Can not open file: " + filename);
+    }
+    DLOG ("Opened file: " + filename);
+    readData ();
+  }
+
+  /* Returns chunk of data */
+  Buffer getData () {
+    assert (!eod ());
+    data_read = true;
+    return buffer;
+  }
+
+  /* Returns lenght of characters read */
+  size_t length () {
+    return count;
+  }
+  
+  /* Returns true for end of data */ 
+  bool eod () {
+    if (!data_read)
+      return false;
+    readData ();
+    return count == 0;
+  }
+
+  ~BinaryReader () {
     file.close ();
   }
 };

@@ -1,10 +1,12 @@
 #ifndef __INTERFACE_HPP__
 #define __INTERFACE_HPP__
 
+#include <assert.h>
 #include <memory>
 
 typedef std::string Buffer;
 const int BUFFER_SIZE = 1024;
+const int RECORD_SIZE_BYTES = sizeof (int16_t);
 
 /*
   Reader interface to get data.
@@ -14,19 +16,37 @@ class IReader {
 public:
   /* returns data buffer */
   virtual Buffer getData () = 0;
+
+  /* returns length of characters read in last call to getData () */
+  virtual size_t length () = 0;
   
   /* returns true if end of data is reached */
   virtual bool eod () = 0;
 };
 typedef std::shared_ptr<IReader> IReaderPtr;
 
+/* Record Types */
+enum RecordType {
+  QUOTE = 1,
+  TRADE,
+  SIGNAL  
+};
+
 /*
   Record base structure.
   Can be extended to Quote, Trade, Signal records.
 */
+
 struct Record {
   int32_t id;
   virtual Buffer toBinaryBuffer () = 0;
+  virtual std::string toString () = 0;
+
+  /* Returns size of the record */
+  virtual size_t vsize () = 0;
+
+  /* Returns record type QUOTE, TRADE, SIGNAL */
+  static RecordType recordType () { assert (false); }
 };
 typedef std::shared_ptr<Record> RecordPtr;
 
@@ -58,7 +78,7 @@ public:
   virtual void notify (const RecordPtr &record) = 0;
 
   /* writes the given buffer */
-  virtual void write (const Buffer &buffer) = 0;
+  virtual void write (const Buffer &buffer, const size_t size) = 0;
 };
 typedef std::shared_ptr<IWriter> IWriterPtr;
 
@@ -76,12 +96,22 @@ public:
 
 struct Datetime {
   std::string datetime;
+  Datetime () : datetime ("YYYY-MM-DD HH:MM:SS.MSS") {}
   Datetime (const std::string &datetime)
     : datetime (datetime)
   {}
 
-  size_t size () {
-    return sizeof (datetime);
+  Datetime& operator= (const Buffer &buffer) {
+    datetime = std::string (buffer.c_str (), size ());
+  }
+
+  std::string toString () {
+    return datetime;
+  }
+
+  static size_t size () {
+    char ch [] = "YYYY-MM-DD HH:MM:SS.MSS";
+    return sizeof (ch);
   }
 };
 #endif
