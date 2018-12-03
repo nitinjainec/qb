@@ -28,13 +28,13 @@ public:
 
   void notify (const RecordPtr &record) {
     VLOG ("Got notification");
-    write (record->toByteBuffer (), record->vsize ());
+    write (record->toByteBuffer ());
   }
 
   // TODO: Optimize it by writing it to local buffer and flush on disk in chunks
-  void write (const ByteBuffer &buffer, const size_t size) {
-    VLOG ("Writing data to file of size: " + std::to_string (size));
-    file.write (buffer.c_str (), size);
+  void write (const ByteBuffer &buffer) {
+    VLOG ("Writing data to file of size: " + std::to_string (buffer.size ()));
+    file.write (buffer.c_str (), buffer.size ());
     VLOG ("Data written to file");
   }
 
@@ -67,13 +67,13 @@ public:
 
   void notify (const RecordPtr &record) {
     VLOG ("Notified");
-    write (record->toString (), record->vsize ());
+    write (record->toString ());
   }
 
-  void write (const ByteBuffer &buffer, const size_t size) {
-    VLOG ("Writing data of size: " + std::to_string (size));
+  void write (const ByteBuffer &buffer) {
+    VLOG ("Writing data of size: " + std::to_string (buffer.size ()));
     VLOG ("Data: " + std::string (buffer.c_str ()));
-    file.write (buffer.c_str (), size);
+    file.write (buffer.c_str (), buffer.size ());
   }
 
   ~CSVWriter () {

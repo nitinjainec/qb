@@ -77,7 +77,7 @@ class BinaryReader : public IReader {
     DLOG("Reading data");
     file.read (buffer, BUFFER_SIZE);
     count = file.gcount ();
-    buffer [count] = '\0';
+
     data_read = false;
     DLOG("Read " + std::to_string (count) + " bytes");
   }
@@ -97,7 +97,7 @@ public:
   ByteBuffer getData () {
     assert (!eod ());
     data_read = true;
-    return buffer;
+    return ByteBuffer (buffer, count);
   }
 
   /* Returns lenght of characters read */

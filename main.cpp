@@ -38,7 +38,7 @@ void test () {
 int main () {
   Logger::create ();
 
-#if 1
+#if 0
   test ();
   return 0;
 #endif

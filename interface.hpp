@@ -83,7 +83,7 @@ public:
   virtual void notify (const RecordPtr &record) = 0;
 
   /* writes the given buffer */
-  virtual void write (const ByteBuffer &buffer, const size_t size) = 0;
+  virtual void write (const ByteBuffer &buffer) = 0;
 };
 typedef std::shared_ptr<IWriter> IWriterPtr;
 

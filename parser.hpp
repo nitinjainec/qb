@@ -51,7 +51,7 @@ class BinaryParser : public IParser {
 
   RecordPtr parseBufferToRecord () {
     RecordPtr record = RecordFactory::create (buffer, length);
-    buffer.erase (0, record->vsize ());
+    buffer.erase (record->vsize ());
     length -= record->vsize ();
     VLOG (record->recordTypeName ());
     VLOG (std::to_string (record->vsize ()));

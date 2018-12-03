@@ -84,11 +84,13 @@ public:
     }
   }
 
-  void erase (size_t pos, size_t size) {
-    assert (false);
+  /* erase bytes from begining */
+  void erase (size_t size) {
+    memcpy (_cptr, _cptr+size, _size - size);
+    _size -= size;
   }
   
-  size_t size () {
+  size_t size () const {
     return _size;
   }
 
@@ -96,7 +98,7 @@ public:
     return _cptr;
   }
 
-  size_t capacity () {
+  size_t capacity () const {
     return _capacity;
   }
 

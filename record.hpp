@@ -4,41 +4,33 @@
 #include <stdio.h>
 #include <string.h>
 
+namespace {
+
+  void copy (char *dest, const char** src, size_t size) {
+    memcpy (dest, *src, size);
+    *src += size;
+  }
+}
+
 struct Quote : public Record {
   Quote () {}
 
   Quote (const ByteBuffer &buffer) {
-    VLOG ("Creating Quote from binary buffer");
+    VLOG ("Creating Quote from ByteBuffer");
+    assert (buffer.size () >= size ());
 
     const char *ch = buffer.c_str ();
-
     RecordType rt = static_cast <RecordType> (*ch);
     assert (rt == QUOTE);
-    ch = ch + sizeof (RecordType);
+    ch += sizeof (RecordType);
 
+    copy (symbol, &ch, sizeof (symbol));
     time = ch;
     ch += time.size ();
-    VLOG ("Time: " + time.toString ());
-
-    VLOG ("Symbol size: " + std::to_string (sizeof (symbol)));
-    memcpy (symbol, ch, sizeof (symbol));
-    ch += sizeof (symbol);
-    VLOG ("Symbol: " + std::string (symbol, sizeof (symbol)));
-
-    const double *dptr = reinterpret_cast <const double *> (ch);
-    bid = *dptr;
-    ch += sizeof (double);
-
-    dptr = reinterpret_cast <const double *> (ch);
-    ask = *dptr;
-    ch += sizeof (double);
-    
-    const uint32_t *uiptr = reinterpret_cast <const uint32_t *> (ch);
-    bsize = *uiptr;
-    ch += sizeof (uint32_t);
-
-    uiptr = reinterpret_cast <const uint32_t *> (ch);
-    asize = *uiptr;
+    copy ((char *)&bid, &ch, sizeof (bid));
+    copy ((char *)&ask, &ch, sizeof (ask));
+    copy ((char *)&bsize, &ch, sizeof (bsize));
+    copy ((char *)&asize, &ch, sizeof (asize));
   }
 
   Quote (const std::string &time,
@@ -65,32 +57,15 @@ struct Quote : public Record {
   }
   
   ByteBuffer toByteBuffer () {
-    char buffer[size ()];
-    char *dest = buffer;
-
-    *dest = recordType ();
-    dest += sizeof (RecordType);
-
-    memcpy (dest, time.toByteBuffer ().c_str (), time.size ());
-    dest += time.size ();
-
-    memcpy (dest, symbol, sizeof (symbol));
-    VLOG ("Symbol copied to binary buffer, size: " + std::to_string (sizeof (symbol)));
-    VLOG (dest);
-    dest += sizeof (symbol);
-
-    memcpy (dest, &bid, sizeof (bid));
-    dest += sizeof (bid);
-
-    memcpy (dest, &ask, sizeof (ask));
-    dest += sizeof (ask);
-
-    memcpy (dest, &bsize, sizeof (bsize));
-    dest += sizeof (bsize);
-
-    memcpy (dest, &asize, sizeof (asize));
-    dest += sizeof (asize);
-
+    ByteBuffer buffer (size () * 2);
+    RecordType rt = recordType ();
+    buffer.append ((char *)&rt, sizeof (RecordType));
+    buffer.append (symbol, sizeof (symbol));
+    buffer.append (time.toByteBuffer ());
+    buffer.append ((char *)&bid, sizeof (bid));
+    buffer.append ((char *)&ask, sizeof (ask));
+    buffer.append ((char *)&bsize, sizeof (bsize));
+    buffer.append ((char *)&asize, sizeof (asize));
     return buffer;
   }
 
@@ -125,19 +100,19 @@ struct Trade : public Record {
   Trade () {}
 
   Trade (const ByteBuffer &buffer) {
-    const char *ch = buffer.c_str ();
+    VLOG ("Creating Trade from ByteBuffer");
+    assert (buffer.size () >= size ());
 
+    const char *ch = buffer.c_str ();
+    RecordType rt = static_cast <RecordType> (*ch);
+    assert (rt == TRADE);
+    ch += sizeof (RecordType);
+
+    copy (symbol, &ch, sizeof (symbol));
     time = ch;
     ch += time.size ();
-
-    memcpy (symbol, ch, sizeof (symbol));
-    ch += sizeof (symbol);
-
-    const double *dptr = reinterpret_cast <const double *> (ch);
-    price = *dptr;
-    ch += sizeof (double);
-
-    condition = *ch;
+    copy ((char *)&price, &ch, sizeof (price));
+    copy ((char *)&condition, &ch, sizeof (condition));
   }
 
   Trade (const std::string &time,
@@ -163,22 +138,13 @@ struct Trade : public Record {
   }
   
   ByteBuffer toByteBuffer () {
-    char buffer[size ()];
-    char *dest = buffer;
-
-    *dest = recordType ();
-    dest += sizeof (RecordType);
-    
-    memcpy (dest, &time, time.size ());
-    dest += time.size ();
-
-    memcpy (dest, symbol, sizeof (symbol));
-    dest += sizeof (symbol);
-
-    memcpy (dest, &price, sizeof (price));
-    dest += sizeof (price);
-
-    *dest = condition;
+    ByteBuffer buffer (size () * 2);
+    RecordType rt = recordType ();
+    buffer.append ((char *)&rt, sizeof (RecordType));
+    buffer.append (symbol, sizeof (symbol));
+    buffer.append (time.toByteBuffer ());
+    buffer.append ((char *)&price, sizeof (price));
+    buffer.append ((char *)&condition, sizeof (condition));
     return buffer;
   }
 
@@ -208,20 +174,19 @@ struct Trade : public Record {
 struct Signal : public Record {
   Signal () {}
   Signal (const ByteBuffer &buffer) {
-    const char *ch = buffer.c_str ();
+    VLOG ("Creating Signal from ByteBuffer");
+    assert (buffer.size () >= size ());
 
+    const char *ch = buffer.c_str ();
+    RecordType rt = static_cast <RecordType> (*ch);
+    assert (rt == TRADE);
+    ch += sizeof (RecordType);
+
+    copy (symbol, &ch, sizeof (symbol));
     time = ch;
     ch += time.size ();
-
-    memcpy (symbol, ch, sizeof (symbol));
-    ch += sizeof (symbol);
-
-    const double *dptr = reinterpret_cast <const double *> (ch);
-    value = *dptr;
-    ch += sizeof (double);
-
-    const uint32_t *uiptr = reinterpret_cast <const uint32_t *> (ch);
-    code = *uiptr;
+    copy ((char *)&value, &ch, sizeof (value));
+    copy ((char *)&code, &ch, sizeof (code));
   }
 
   Signal (const std::string &time,
@@ -232,29 +197,20 @@ struct Signal : public Record {
     , value (value)
     , code (code)
   { strcpy (symbol, symbol_str.c_str ()); }
-
+  
   static size_t size () {
     return sizeof (RecordType) + Datetime::size () + sizeof (char[5])
       + sizeof (double) + sizeof (uint32_t);
   }
   
   ByteBuffer toByteBuffer () {
-    char buffer[size ()];
-    char *dest = buffer;
-
-    *dest = recordType ();
-    dest += sizeof (RecordType);
-    
-    memcpy (dest, &time, time.size ());
-    dest += time.size ();
-
-    memcpy (dest, symbol, sizeof (symbol));
-    dest += sizeof (symbol);
-
-    memcpy (dest, &value, sizeof (value));
-    dest += sizeof (value);
-    
-    memcpy (dest, &code, sizeof (code));
+    ByteBuffer buffer (size () * 2);
+    RecordType rt = recordType ();
+    buffer.append ((char *)&rt, sizeof (RecordType));
+    buffer.append (symbol, sizeof (symbol));
+    buffer.append (time.toByteBuffer ());
+    buffer.append ((char *)&value, sizeof (value));
+    buffer.append ((char *)&code, sizeof (code));
     return buffer;
   }
 
