@@ -70,6 +70,7 @@ class BinaryReader : public IReader {
   bool data_read;
 
   void readData () {
+    count = 0;
     if (file.eof ())
       return;
 

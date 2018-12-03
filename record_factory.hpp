@@ -53,7 +53,7 @@ class RecordFactory {
 
   static RecordPtr createQuote (const Buffer &buffer) {
     assert (*buffer.c_str () == QUOTE);
-    return RecordPtr (new Quote (buffer.c_str () + 1));
+    return RecordPtr (new Quote (buffer));
   }
 
   static RecordPtr createTrade (const Buffer &buffer) {

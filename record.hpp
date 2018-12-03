@@ -8,13 +8,22 @@ struct Quote : public Record {
   Quote () {}
 
   Quote (const Buffer &buffer) {
+    VLOG ("Creating Quote from binary buffer");
+
     const char *ch = buffer.c_str ();
+
+    RecordType rt = static_cast <RecordType> (*ch);
+    assert (rt == QUOTE);
+    ch = ch + sizeof (RecordType);
 
     time = ch;
     ch += time.size ();
+    VLOG ("Time: " + time.toString ());
 
+    VLOG ("Symbol size: " + std::to_string (sizeof (symbol)));
     memcpy (symbol, ch, sizeof (symbol));
     ch += sizeof (symbol);
+    VLOG ("Symbol: " + std::string (symbol, sizeof (symbol)));
 
     const double *dptr = reinterpret_cast <const double *> (ch);
     bid = *dptr;
@@ -43,7 +52,11 @@ struct Quote : public Record {
     , ask (ask)
     , bsize (bsize)
     , asize (asize)
-  { strcpy (symbol, symbol_str.c_str ()); }
+  {
+    strcpy (symbol, symbol_str.c_str ());
+    VLOG ("Quote constructed");
+    VLOG ("Symbol " + std::string (symbol, sizeof (symbol)));
+  }
 
   static size_t size () {
     return sizeof (RecordType) + Datetime::size () + sizeof (char [5])
@@ -58,10 +71,12 @@ struct Quote : public Record {
     *dest = recordType ();
     dest += sizeof (RecordType);
 
-    memcpy (dest, &time, time.size ());
+    memcpy (dest, time.toBinaryBuffer ().c_str (), time.size ());
     dest += time.size ();
 
     memcpy (dest, symbol, sizeof (symbol));
+    VLOG ("Symbol copied to binary buffer, size: " + std::to_string (sizeof (symbol)));
+    VLOG (dest);
     dest += sizeof (symbol);
 
     memcpy (dest, &bid, sizeof (bid));
@@ -92,6 +107,10 @@ struct Quote : public Record {
     return QUOTE;
   }
 
+  std::string recordTypeName () {
+    return "QUOTE";
+  }
+  
   size_t vsize () { return size (); }
 
   Datetime time;
@@ -173,6 +192,10 @@ struct Trade : public Record {
   static constexpr RecordType recordType () {
     return TRADE;
   }
+
+  std::string recordTypeName () {
+    return "TRADE";
+  }
   
   size_t vsize () { return size (); }
   
@@ -244,6 +267,10 @@ struct Signal : public Record {
 
   static constexpr RecordType recordType () {
     return SIGNAL;
+  }
+
+  std::string recordTypeName () {
+    return "SIGNAL";
   }
 
   size_t vsize () { return size (); }

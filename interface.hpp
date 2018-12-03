@@ -45,6 +45,9 @@ struct Record {
   /* Returns size of the record */
   virtual size_t vsize () = 0;
 
+  /* Returns readable name of record type */
+  virtual std::string recordTypeName () = 0;
+
   /* Returns record type QUOTE, TRADE, SIGNAL */
   static RecordType recordType () { assert (false); }
 };
@@ -99,9 +102,13 @@ struct Datetime {
   Datetime () : datetime ("YYYY-MM-DD HH:MM:SS.MSS") {}
   Datetime (const std::string &datetime)
     : datetime (datetime)
-  {}
+  {
+    VLOG ("Datetime constructed");
+    VLOG ("Datetime size: " + std::to_string (datetime.size ()));
+  }
 
   Datetime& operator= (const Buffer &buffer) {
+    VLOG ("Datetime size: " + std::to_string (size()));
     datetime = std::string (buffer.c_str (), size ());
   }
 
@@ -109,9 +116,13 @@ struct Datetime {
     return datetime;
   }
 
+  Buffer toBinaryBuffer () {
+    return datetime;
+  }
+  
   static size_t size () {
     char ch [] = "YYYY-MM-DD HH:MM:SS.MSS";
-    return sizeof (ch);
+    return sizeof (ch) - 1;
   }
 };
 #endif

@@ -69,12 +69,13 @@ public:
   }
 
   void notify (const RecordPtr &record) {
-    std::cout << "Notified \n";
+    VLOG ("Notified");
     write (record->toString (), record->vsize ());
   }
 
   void write (const Buffer &buffer, const size_t size) {
-    std::cout << "Writing: " << buffer << "\n";
+    VLOG ("Writing data of size: " + std::to_string (size));
+    VLOG ("Data: " + buffer);
     file.write (buffer.c_str (), size);
   }
 

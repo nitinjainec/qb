@@ -50,21 +50,30 @@ class BinaryParser : public IParser {
   IReaderPtr reader;
   Buffer buffer;
   size_t length;
-  size_t idx;
 
-  RecordPtr parseBufferToRecord (const Buffer &buffer = "") {   
-    return RecordFactory::create (buffer, length);
+  RecordPtr parseBufferToRecord () {
+    RecordPtr record = RecordFactory::create (buffer, length);
+    buffer.erase (0, record->vsize ());
+    length -= record->vsize ();
+    VLOG (record->recordTypeName ());
+    VLOG (std::to_string (record->vsize ()));
+    return record;
   }
 
   bool canParseBufferToRecord () {
     return RecordFactory::canCreate (buffer, length);
   }
-  
+
+  void getData () {
+    const Buffer & buff = reader->getData ();
+    length += reader->length ();
+    buffer.append (buff);
+  }
+
 public:
   BinaryParser (const IReaderPtr &reader)
     : reader (reader)
     , length (0)
-    , idx (0)
   {
     DLOG ("BinaryParser constructed");
     buffer.reserve (BUFFER_SIZE * 2);
@@ -72,14 +81,12 @@ public:
   
   RecordPtr nextRecord () {
     assert (!eor ());
+    while (!canParseBufferToRecord ()
+	   && !eor ())
+      getData ();
     if (canParseBufferToRecord ())
       return parseBufferToRecord ();
-    
-    const Buffer & buff = reader->getData ();
-    length += reader->length ();
-    buffer.append (buff);
-    
-    return parseBufferToRecord (buff);
+    throw std::runtime_error ("Unable to parse binary buffer to record.");
   }
 
   bool eor () {
