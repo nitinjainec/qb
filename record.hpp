@@ -75,7 +75,8 @@ struct Quote : public Record {
       + "," + std::to_string (bid)
       + "," + std::to_string (ask)
       + "," + std::to_string (bsize)
-      + "," + std::to_string (asize);
+      + "," + std::to_string (asize)
+      + std::string ('\0', 1);
   }
   
   static constexpr RecordType recordType () {
@@ -101,6 +102,8 @@ struct Trade : public Record {
 
   Trade (const ByteBuffer &buffer) {
     VLOG ("Creating Trade from ByteBuffer");
+    VLOG ("buffer size: " + std::to_string (buffer.size ()));
+    VLOG ("required size: " + std::to_string (size ()));
     assert (buffer.size () >= size ());
 
     const char *ch = buffer.c_str ();
@@ -152,7 +155,7 @@ struct Trade : public Record {
     return (condition == 0xff)
       ? time.toString () + "," + symbol + "," + std::to_string (price)
       : (time.toString () + "," + symbol + "," + std::to_string (price)
-	 + "," + std::string (condition, 1));
+	 + "," + std::string (condition, 1)) + std::string ('\0', 1);
   }
 
   static constexpr RecordType recordType () {
@@ -218,7 +221,7 @@ struct Signal : public Record {
     return time.toString ()
       + "," + symbol
       + "," + std::to_string (value)
-      + "," + std::to_string (code);
+      + "," + std::to_string (code) + std::string ('\0', 1);
   }
 
   static constexpr RecordType recordType () {

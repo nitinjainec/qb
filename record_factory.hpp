@@ -37,6 +37,7 @@ class RecordFactory {
   static RecordPtr createSignal (const std::vector<std::string> &fields) {
     assert (fields.size () == 4);
     VSLOG ("Creating Signal record");
+    VSLOG (fields[3]);
     return RecordPtr (new Signal (fields[0],
 				  fields[1],
 				  std::stod (fields[2]),
@@ -58,12 +59,12 @@ class RecordFactory {
 
   static RecordPtr createTrade (const ByteBuffer &buffer) {
     assert (*buffer.c_str () == TRADE);
-    return RecordPtr (new Trade (buffer.c_str () + 1));
+    return RecordPtr (new Trade (buffer));
   }
 
   static RecordPtr createSignal (const ByteBuffer &buffer) {
     assert (*buffer.c_str () == SIGNAL);
-    return RecordPtr (new Signal (buffer.c_str () + 1));
+    return RecordPtr (new Signal (buffer));
   }
 public:
   static RecordPtr create (const std::vector<std::string> &fields) {
@@ -82,20 +83,21 @@ public:
     return createSignal (fields);
   }
 
-  static bool canCreate (const ByteBuffer &buffer, const size_t size) {
-    VSLOG ("canCreate with buffer size: " + std::to_string (size));
-    if (size == 0)
+  static bool canCreate (const ByteBuffer &buffer) {
+    VSLOG ("canCreate with buffer size: " + std::to_string (buffer.size ()));
+    if (buffer.size () == 0)
       return false;
 
     RecordType rt = static_cast <RecordType>(*buffer.c_str ());
     VSLOG ("Expected recordSize: " + std::to_string (recordSize (rt)));
-    return size >= recordSize (rt);
+    return buffer.size () >= recordSize (rt);
   }
   
-  static RecordPtr create (const ByteBuffer &buffer, size_t &size) {
-    assert (canCreate (buffer, size));
+  static RecordPtr create (const ByteBuffer &buffer) {
+    assert (canCreate (buffer));
     const char *ch = buffer.c_str ();
 
+    VSLOG ("Creating record from ByteBuffer: " + std::to_string (buffer.size ()));
     RecordType rt = static_cast <RecordType>(*buffer.c_str ());
     switch (rt) {
     case Quote::recordType (): return createQuote (buffer);

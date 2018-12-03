@@ -66,7 +66,7 @@ public:
   }
 
   void notify (const RecordPtr &record) {
-    VLOG ("Notified");
+    VLOG ("Notified: " + record->recordTypeName ());
     write (record->toString ());
   }
 

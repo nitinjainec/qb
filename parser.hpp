@@ -47,31 +47,25 @@ public:
 class BinaryParser : public IParser {
   IReaderPtr reader;
   ByteBuffer buffer;
-  size_t length;
 
   RecordPtr parseBufferToRecord () {
-    RecordPtr record = RecordFactory::create (buffer, length);
+    RecordPtr record (RecordFactory::create (buffer));
     buffer.erase (record->vsize ());
-    length -= record->vsize ();
-    VLOG (record->recordTypeName ());
-    VLOG (std::to_string (record->vsize ()));
     return record;
   }
 
   bool canParseBufferToRecord () {
-    return RecordFactory::canCreate (buffer, length);
+    return RecordFactory::canCreate (buffer);
   }
 
   void getData () {
     const ByteBuffer & buff = reader->getData ();
-    length += reader->length ();
     buffer.append (buff);
   }
 
 public:
   BinaryParser (const IReaderPtr &reader)
     : reader (reader)
-    , length (0)
   {
     DLOG ("BinaryParser constructed");
     buffer.reserve (BUFFER_SIZE * 2);
@@ -88,7 +82,7 @@ public:
   }
 
   bool eor () {
-    return reader->eod ();
+    return !canParseBufferToRecord () && reader->eod ();
   }
 };
 #endif
