@@ -7,7 +7,7 @@
 struct Quote : public Record {
   Quote () {}
 
-  Quote (const Buffer &buffer) {
+  Quote (const ByteBuffer &buffer) {
     VLOG ("Creating Quote from binary buffer");
 
     const char *ch = buffer.c_str ();
@@ -64,14 +64,14 @@ struct Quote : public Record {
       + sizeof (uint32_t);
   }
   
-  Buffer toBinaryBuffer () {
+  ByteBuffer toByteBuffer () {
     char buffer[size ()];
     char *dest = buffer;
 
     *dest = recordType ();
     dest += sizeof (RecordType);
 
-    memcpy (dest, time.toBinaryBuffer ().c_str (), time.size ());
+    memcpy (dest, time.toByteBuffer ().c_str (), time.size ());
     dest += time.size ();
 
     memcpy (dest, symbol, sizeof (symbol));
@@ -124,7 +124,7 @@ struct Quote : public Record {
 struct Trade : public Record {
   Trade () {}
 
-  Trade (const Buffer &buffer) {
+  Trade (const ByteBuffer &buffer) {
     const char *ch = buffer.c_str ();
 
     time = ch;
@@ -162,7 +162,7 @@ struct Trade : public Record {
       + sizeof (double) + sizeof (char);
   }
   
-  Buffer toBinaryBuffer () {
+  ByteBuffer toByteBuffer () {
     char buffer[size ()];
     char *dest = buffer;
 
@@ -207,7 +207,7 @@ struct Trade : public Record {
 
 struct Signal : public Record {
   Signal () {}
-  Signal (const Buffer &buffer) {
+  Signal (const ByteBuffer &buffer) {
     const char *ch = buffer.c_str ();
 
     time = ch;
@@ -238,7 +238,7 @@ struct Signal : public Record {
       + sizeof (double) + sizeof (uint32_t);
   }
   
-  Buffer toBinaryBuffer () {
+  ByteBuffer toByteBuffer () {
     char buffer[size ()];
     char *dest = buffer;
 

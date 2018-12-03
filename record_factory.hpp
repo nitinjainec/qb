@@ -51,17 +51,17 @@ class RecordFactory {
     }
   }
 
-  static RecordPtr createQuote (const Buffer &buffer) {
+  static RecordPtr createQuote (const ByteBuffer &buffer) {
     assert (*buffer.c_str () == QUOTE);
     return RecordPtr (new Quote (buffer));
   }
 
-  static RecordPtr createTrade (const Buffer &buffer) {
+  static RecordPtr createTrade (const ByteBuffer &buffer) {
     assert (*buffer.c_str () == TRADE);
     return RecordPtr (new Trade (buffer.c_str () + 1));
   }
 
-  static RecordPtr createSignal (const Buffer &buffer) {
+  static RecordPtr createSignal (const ByteBuffer &buffer) {
     assert (*buffer.c_str () == SIGNAL);
     return RecordPtr (new Signal (buffer.c_str () + 1));
   }
@@ -82,7 +82,7 @@ public:
     return createSignal (fields);
   }
 
-  static bool canCreate (const Buffer &buffer, const size_t size) {
+  static bool canCreate (const ByteBuffer &buffer, const size_t size) {
     VSLOG ("canCreate with buffer size: " + std::to_string (size));
     if (size == 0)
       return false;
@@ -92,7 +92,7 @@ public:
     return size >= recordSize (rt);
   }
   
-  static RecordPtr create (const Buffer &buffer, size_t &size) {
+  static RecordPtr create (const ByteBuffer &buffer, size_t &size) {
     assert (canCreate (buffer, size));
     const char *ch = buffer.c_str ();
 

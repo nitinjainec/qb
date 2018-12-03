@@ -29,7 +29,7 @@ void test () {
   IReaderPtr reader (new CSVReader ("qb.csv"));
   IParserPtr parser (new CSVParser (reader));
   RecordPtr record = parser->nextRecord ();
-  const Buffer &buffer = record->toBinaryBuffer ();
+  const ByteBuffer &buffer = record->toByteBuffer ();
   const char *ch = buffer.c_str ();
 
   //assert (*(reinterpret_cast<const RecordType *>(ch)) == QUOTE);

@@ -4,7 +4,9 @@
 #include <assert.h>
 #include <memory>
 
-typedef std::string Buffer;
+#include "byte_buffer.hpp"
+
+
 const int BUFFER_SIZE = 1024;
 const int RECORD_SIZE_BYTES = sizeof (int16_t);
 
@@ -15,7 +17,7 @@ const int RECORD_SIZE_BYTES = sizeof (int16_t);
 class IReader {
 public:
   /* returns data buffer */
-  virtual Buffer getData () = 0;
+  virtual ByteBuffer getData () = 0;
 
   /* returns length of characters read in last call to getData () */
   virtual size_t length () = 0;
@@ -39,7 +41,7 @@ enum RecordType {
 
 struct Record {
   int32_t id;
-  virtual Buffer toBinaryBuffer () = 0;
+  virtual ByteBuffer toByteBuffer () = 0;
   virtual std::string toString () = 0;
 
   /* Returns size of the record */
@@ -81,7 +83,7 @@ public:
   virtual void notify (const RecordPtr &record) = 0;
 
   /* writes the given buffer */
-  virtual void write (const Buffer &buffer, const size_t size) = 0;
+  virtual void write (const ByteBuffer &buffer, const size_t size) = 0;
 };
 typedef std::shared_ptr<IWriter> IWriterPtr;
 
@@ -107,7 +109,7 @@ struct Datetime {
     VLOG ("Datetime size: " + std::to_string (datetime.size ()));
   }
 
-  Datetime& operator= (const Buffer &buffer) {
+  Datetime& operator= (const std::string &buffer) {
     VLOG ("Datetime size: " + std::to_string (size()));
     datetime = std::string (buffer.c_str (), size ());
   }
@@ -116,7 +118,7 @@ struct Datetime {
     return datetime;
   }
 
-  Buffer toBinaryBuffer () {
+  ByteBuffer toByteBuffer () {
     return datetime;
   }
   

@@ -11,7 +11,7 @@
 class CSVReader : public IReader {
   char delimeter;
   int32_t idx;
-  std::vector<Buffer> data;
+  std::vector<ByteBuffer> data;
   std::ifstream file;
 
   void readData () {
@@ -39,7 +39,7 @@ public:
   }
   
   /* Returns single line as data */
-  Buffer getData () {
+  ByteBuffer getData () {
     assert (!eod ());
     assert (idx < data.size ());
     return data[idx++];
@@ -94,7 +94,7 @@ public:
   }
 
   /* Returns chunk of data */
-  Buffer getData () {
+  ByteBuffer getData () {
     assert (!eod ());
     data_read = true;
     return buffer;

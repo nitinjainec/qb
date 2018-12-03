@@ -14,9 +14,9 @@ class CSVParser : public IParser {
   IReaderPtr reader;
   std::string delimeter;
 
-  RecordPtr parseBufferToRecord (const Buffer &buffer) {
+  RecordPtr parseBufferToRecord (const ByteBuffer &buffer) {
     std::vector <std::string> fields;
-    std::istringstream s (buffer);
+    std::istringstream s (buffer.c_str ());
     for (std::string field; std::getline (s, field, ','); ) {
       util::trim (field);
       fields.push_back (field);
@@ -35,7 +35,7 @@ public:
   
   RecordPtr nextRecord () {
     assert (!eor ());
-    const Buffer & buffer = reader->getData ();
+    const ByteBuffer & buffer = reader->getData ();
     return parseBufferToRecord (buffer);
   }
 
@@ -46,7 +46,7 @@ public:
 
 class BinaryParser : public IParser {
   IReaderPtr reader;
-  Buffer buffer;
+  ByteBuffer buffer;
   size_t length;
 
   RecordPtr parseBufferToRecord () {
@@ -63,7 +63,7 @@ class BinaryParser : public IParser {
   }
 
   void getData () {
-    const Buffer & buff = reader->getData ();
+    const ByteBuffer & buff = reader->getData ();
     length += reader->length ();
     buffer.append (buff);
   }
