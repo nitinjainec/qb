@@ -21,8 +21,7 @@ public:
   {
     file.open (filename.c_str (), std::ios::out | std::ios::trunc | std::ios::binary);
     if (file.fail ()) {
-      throw std::runtime_error ((boost::format
-				 ("Can not open file: %1%") % filename).str ());
+      throw std::runtime_error ("Can not open file: " + filename);
     }
     DLOG ("File opened : " + filename);
   }
@@ -62,8 +61,7 @@ public:
   {
     file.open (filename.c_str (), std::ios::out | std::ios::trunc);
     if (file.fail ()) {
-      throw std::runtime_error ((boost::format
-				 ("Can not open file: %1%") % filename).str ());
+      throw std::runtime_error ("Can not open file: " + filename);
     }
     DLOG ("File opened : " + filename);
   }

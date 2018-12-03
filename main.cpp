@@ -25,9 +25,23 @@ void binaryToCSV () {
   processor->process ();
 }
 
+void test () {
+  IReaderPtr reader (new CSVReader ("qb.csv"));
+  IParserPtr parser (new CSVParser (reader));
+  RecordPtr record = parser->nextRecord ();
+  const Buffer &buffer = record->toBinaryBuffer ();
+  const char *ch = buffer.c_str ();
+
+  //assert (*(reinterpret_cast<const RecordType *>(ch)) == QUOTE);
+}
+
 int main () {
   Logger::create ();
 
+#if 1
+  test ();
+  return 0;
+#endif
   try {
     csvToBinary ();
     binaryToCSV ();

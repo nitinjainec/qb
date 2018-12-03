@@ -1,11 +1,9 @@
 #ifndef __PARSER_HPP__
 #define __PARSER_HPP__
 
+#include <algorithm>
 #include <vector>
 #include <sstream>
-
-#include <boost/algorithm/string.hpp>
-#include <boost/format.hpp>
 
 #include "interface.hpp"
 #include "logger.hpp"
