@@ -6,10 +6,10 @@
 #include <sstream>
 
 #include <interface.hpp>
-#include <logger.hpp>
-#include <record_factory.hpp>
-#include <statistics.hpp>
-#include <util.hpp>
+#include <record/record_factory.hpp>
+#include <statistics/stat_recorder.hpp>
+#include <util/logger.hpp>
+#include <util/util.hpp>
 
 class CSVParser : public IParser {
   IReaderPtr reader;

@@ -4,7 +4,7 @@
 #include <assert.h>
 #include <memory>
 
-#include "byte_buffer.hpp"
+#include <util/byte_buffer.hpp>
 
 
 const int BUFFER_SIZE = 1024;

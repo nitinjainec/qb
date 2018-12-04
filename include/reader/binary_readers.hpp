@@ -4,9 +4,9 @@
 #include <vector>
 #include <string>
 
-#include "interface.hpp"
-#include "logger.hpp"
-#include "reader.hpp"
+#include <interface.hpp>
+#include <util/logger.hpp>
+#include <reader/binary_reader.hpp>
 
 
 class BinaryReaders : public IReader {

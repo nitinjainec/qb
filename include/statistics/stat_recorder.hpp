@@ -6,13 +6,11 @@
 #include <sstream>
 #include <vector>
 
-#include <unistd.h>
-#include <sys/resource.h>
-
 #include <interface.hpp>
+#include <statistics/memory_stat.hpp>
+#include <statistics/time_stat.hpp>
 #include <util/logger.hpp>
 #include <util/util.hpp>
-
 
 class Stats {
 public:

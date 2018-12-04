@@ -1,35 +1,36 @@
 #include <iostream>
 
-#include "binary_readers.hpp"
-#include "binary_writers.hpp"
-#include "logger.hpp"
-#include "parser.hpp"
-#include "processor.hpp"
-#include "reader.hpp"
-#include "statistics.hpp"
-#include "writer.hpp"
+#include <reader/binary_readers.hpp>
+#include <reader/csv_reader.hpp>
+#include <parser/binary_parser.hpp>
+#include <parser/csv_parser.hpp>
+#include <processor/processor.hpp>
+#include <statistics/stat_recorder.hpp>
+#include <util/logger.hpp>
+#include <writer/binary_writer.hpp>
+#include <writer/binary_writers.hpp>
+#include <writer/csv_writer.hpp>
 
 void csvToBinary () {
-  IReaderPtr reader (new CSVReader ("qb.csv"));
+  IReaderPtr reader (new CSVReader ("../data/qb.csv"));
   IParserPtr parser (new CSVParser (reader));
-  IProcessorPtr processor (new CSVToBinaryProcessor (parser));
-  //IWriterPtr writer (new BinaryWriter ("filename.txt"));
-  IWriterPtr writer (new BinaryWriters ("Symbol-"));
+  IProcessorPtr processor (new Processor (parser));
+  IWriterPtr writer (new BinaryWriters ("../output/Symbol-"));
 
   processor->registerWriter (writer);
   processor->process ();
 }
 
 void binaryToCSV () {
-//IReaderPtr reader (new BinaryReader ("filename.txt"));
-std::vector <std::string> filenames;
-filenames.push_back ("Symbol-ZBM3");
-filenames.push_back ("Symbol-ZNM3");
+  //IReaderPtr reader (new BinaryReader ("filename.txt"));
+  std::vector <std::string> filenames;
+  filenames.push_back ("../output/Symbol-ZBM3");
+  filenames.push_back ("../output/Symbol-ZNM3");
 
-IReaderPtr reader (new BinaryReaders (filenames));
+  IReaderPtr reader (new BinaryReaders (filenames));
 
   IParserPtr parser (new BinaryParser (reader));
-  IProcessorPtr processor (new BinaryToCSVProcessor (parser));
+  IProcessorPtr processor (new Processor (parser));
   IWriterPtr writer (new CSVWriter ("output.csv"));
   processor->registerWriter (writer);
   processor->process ();

@@ -7,7 +7,7 @@
 #include <vector>
 
 #include <interface.hpp>
-#include <statistics.hpp>
+#include <statistics/stat_recorder.hpp>
 
 class CSVReader : public IReader {
   char delimeter;

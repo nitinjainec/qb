@@ -4,9 +4,9 @@
 #include <assert.h>
 #include <map>
 
-#include "interface.hpp"
-//#include "logger.hpp"
-#include "writer.hpp"
+#include <interface.hpp>
+#include <util/logger.hpp>
+#include <writer/binary_writer.hpp>
 
 /*
   Class to write each symbol record in its own binary file

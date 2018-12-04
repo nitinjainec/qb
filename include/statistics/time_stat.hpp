@@ -6,13 +6,9 @@
 #include <sstream>
 #include <vector>
 
-#include <unistd.h>
-#include <sys/resource.h>
-
-#include "interface.hpp"
-#include "logger.hpp"
+#include <interface.hpp>
+#include <util/logger.hpp>
 #include <util/util.hpp>
-
 
 class TimeStat : public IStat {
   struct Stat {

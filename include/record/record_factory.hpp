@@ -1,9 +1,11 @@
 #ifndef __RECORD_FACTORY_HPP__
 #define __RECORD_FACTORY_HPP__
 
-#include "interface.hpp"
-#include "logger.hpp"
-#include "record.hpp"
+#include <interface.hpp>
+#include <util/logger.hpp>
+#include <record/quote.hpp>
+#include <record/trade.hpp>
+#include <record/signal.hpp>
 
 /*
   Factory class to create Record based on fields

@@ -2,7 +2,7 @@
 #define __PROCESSOR_HPP__
 
 #include <interface.hpp>
-#include <statistics.hpp>
+#include <statistics/stat_recorder.hpp>
 
 class Processor : public IProcessor {
   IParserPtr parser;
@@ -16,7 +16,7 @@ class Processor : public IProcessor {
   }
 
 public:
-  Pocessor (const IParserPtr &parser)
+  Processor (const IParserPtr &parser)
     : parser (parser)
   {
     DLOG ("Processor constructed");

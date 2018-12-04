@@ -5,8 +5,8 @@
 #include <string>
 
 #include <interface.hpp>
-#include <logger.hpp>
-#include <statistics.hpp>
+#include <util/logger.hpp>
+#include <statistics/stat_recorder.hpp>
 
 class BinaryWriter : public IWriter {
   std::ofstream file;

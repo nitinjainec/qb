@@ -1,6 +1,11 @@
 #ifndef __UTIL_HPP__
 #define __UTIL_HPP__
 
+#include <algorithm>
+
+#include <unistd.h>
+#include <sys/resource.h>
+
 namespace util {
   /* in place left trime */
   inline void ltrim (std::string &s) {
@@ -22,6 +27,11 @@ namespace util {
     rtrim (s);
   }
 
+  void copy (char *dest, const char** src, size_t size) {
+    memcpy (dest, *src, size);
+    *src += size;
+  }
+  
   namespace linux {
     /* Returns the current resident set size or 0 if the value cannot be read. */
     size_t getCurrentRSS ( )

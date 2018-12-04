@@ -6,9 +6,6 @@
 #include <sstream>
 #include <vector>
 
-#include <unistd.h>
-#include <sys/resource.h>
-
 #include <interface.hpp>
 #include <util/logger.hpp>
 #include <util/util.hpp>
@@ -38,7 +35,7 @@ class MemoryStat : public IStat {
   
   void updateStat (Stat &stat) {
     size_t currentSize = util::linux::getCurrentRSS ();
-    size_t peakSize    = util::inux::getMaxRSS ();
+    size_t peakSize    = util::linux::getMaxRSS ();
 
     size_t currentSizeInc = currentSize - stat.startCurrentSize;
     size_t peakSizeInc = peakSize - stat.startPeakSize;
@@ -72,8 +69,8 @@ public:
     assert (!stat.started);
     stat.started = true;
     ++stat.count;
-    stat.startCurrentSize = Linux::getCurrentRSS ();
-    stat.startPeakSize    = Linux::getMaxRSS ();
+    stat.startCurrentSize = util::linux::getCurrentRSS ();
+    stat.startPeakSize    = util::linux::getMaxRSS ();
   }
 
   void end (const std::string &key) {
