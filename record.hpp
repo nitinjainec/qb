@@ -98,7 +98,9 @@ struct Quote : public Record {
   uint32_t asize;
 };
 
+
 struct Trade : public Record {
+  static char const NO_COND = ' ';
   Trade () {}
 
   Trade (const ByteBuffer &buffer) {
@@ -133,7 +135,7 @@ struct Trade : public Record {
 	 const double &price)
     : time (time)
     , price (price)
-    , condition (0xff)
+    , condition (NO_COND)
   { strcpy (symbol, symbol_str.c_str ()); }
 
   static size_t size () {
@@ -155,7 +157,7 @@ struct Trade : public Record {
   std::string toString () {
     std::stringstream ss;
     ss << time.toString () << "," << symbol << "," << price;
-    if (condition != 0xff)
+    if (condition != NO_COND)
       ss << "," << condition;
     return ss.str ();
   }
