@@ -21,5 +21,29 @@ namespace util {
     ltrim (s);
     rtrim (s);
   }
+
+  namespace linux {
+    /* Returns the current resident set size or 0 if the value cannot be read. */
+    size_t getCurrentRSS ( )
+    {
+      long rss = 0L;
+      size_t c_rss = 0;
+      FILE* fp = NULL;
+      if ((fp = fopen( "/proc/self/statm", "r" )) != NULL) {
+	if (fscanf (fp, "%*s%ld", &rss) == 1)
+	  c_rss = rss * (size_t) sysconf (_SC_PAGESIZE);
+	fclose( fp );
+      }
+      return c_rss; 
+    }
+
+    /* Returns max resident set size measured in bytes */
+    size_t getMaxRSS( )
+    {
+      struct rusage rusage;
+      getrusage( RUSAGE_SELF, &rusage );
+      return (size_t)(rusage.ru_maxrss * 1024L);
+    }
+  }
 }
 #endif
