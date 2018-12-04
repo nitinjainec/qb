@@ -42,9 +42,9 @@ int main () {
     StatRecorder sr ("Main");
     csvToBinary ();
     binaryToCSV ();
-    StatRecorder::display (std::cout);
   }
   catch (const std::exception& ex) {
     std::cout << "Exception: " << ex.what () << "\n";
   }
+  StatRecorder::display (std::cout);
 }

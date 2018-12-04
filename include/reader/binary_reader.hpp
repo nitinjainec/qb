@@ -8,11 +8,14 @@
 
 #include <interface.hpp>
 #include <statistics/stat_recorder.hpp>
+#include <util/byte_buffer.hpp>
+
+const size_t FILE_BUFFER_SIZE = 512 * 1024;
 
 class BinaryReader : public IReader {
   std::ifstream file;
-  char buffer [BUFFER_SIZE+1];
-  int32_t count;
+  ByteBuffer buffer;
+  size_t count;
   bool data_read;
 
   void readData () {
@@ -22,9 +25,9 @@ class BinaryReader : public IReader {
       return;
 
     DLOG("Reading data");
-    file.read (buffer, BUFFER_SIZE);
+    file.read (buffer.toAppend (FILE_BUFFER_SIZE), FILE_BUFFER_SIZE);
     count = file.gcount ();
-
+    buffer.appended (count);
     data_read = false;
     DLOG("Read " + std::to_string (count) + " bytes");
   }
@@ -32,6 +35,7 @@ class BinaryReader : public IReader {
 public:
   BinaryReader (const std::string &filename)
     : file (filename.c_str (), std::ios::in | std::ios::binary)
+    , buffer (FILE_BUFFER_SIZE * 2)
   {
     if (file.fail ()) {
       throw std::runtime_error ("Can not open file: " + filename);
@@ -44,20 +48,19 @@ public:
   ByteBuffer getData () {
     assert (!eod ());
     data_read = true;
-    return ByteBuffer (buffer, count);
+    ByteBuffer result (buffer);
+    buffer.erase (count);
+    return result;
   }
 
-  /* Returns lenght of characters read */
-  size_t length () {
-    return count;
-  }
-  
   /* Returns true for end of data */ 
   bool eod () {
-    if (!data_read)
+    if (buffer.size () != 0)
+      //if (!data_read)
       return false;
     readData ();
-    return count == 0;
+    return buffer.size () == 0;
+    //count == 0;
   }
 
   ~BinaryReader () {
