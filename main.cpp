@@ -6,6 +6,7 @@
 #include "parser.hpp"
 #include "processor.hpp"
 #include "reader.hpp"
+#include "statistics.hpp"
 #include "writer.hpp"
 
 void csvToBinary () {

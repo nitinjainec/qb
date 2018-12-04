@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "interface.hpp"
+#include "statistics.hpp"
 
 class CSVReader : public IReader {
   char delimeter;
@@ -15,7 +16,8 @@ class CSVReader : public IReader {
   std::ifstream file;
 
   void readData () {
-    DLOG("Reading data");
+    StatRecorder sr ("Reading Data");
+    DLOG("Reading csv");
     data.clear ();
     idx = 0;
     for (std::string line; std::getline (file, line)
@@ -65,6 +67,7 @@ class BinaryReader : public IReader {
   bool data_read;
 
   void readData () {
+    StatRecorder sr ("Reading binary data");
     count = 0;
     if (file.eof ())
       return;

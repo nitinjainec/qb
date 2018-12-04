@@ -8,6 +8,7 @@
 #include "interface.hpp"
 #include "logger.hpp"
 #include "record_factory.hpp"
+#include "statistics.hpp"
 #include "util.hpp"
 
 class CSVParser : public IParser {
@@ -15,6 +16,7 @@ class CSVParser : public IParser {
   std::string delimeter;
 
   RecordPtr parseBufferToRecord (const ByteBuffer &buffer) {
+    StatRecorder sr ("Parsing record from csv");
     std::vector <std::string> fields;
     std::istringstream s (buffer.c_str ());
     for (std::string field; std::getline (s, field, ','); ) {
@@ -49,6 +51,7 @@ class BinaryParser : public IParser {
   ByteBuffer buffer;
 
   RecordPtr parseBufferToRecord () {
+    StatRecorder sr ("Parsing record from binary");
     RecordPtr record (RecordFactory::create (buffer));
     buffer.erase (record->vsize ());
     return record;

@@ -2,6 +2,7 @@
 #define __PROCESSOR_HPP__
 
 #include "interface.hpp"
+#include "statistics.hpp"
 
 class CSVToBinaryProcessor : public IProcessor {
   IParserPtr parser;
@@ -29,7 +30,8 @@ public:
 
   /* Process the data and notify registered writers */
   void process () {
-    DLOG ("started processing csv to binary"); 
+    DLOG ("started processing csv to binary");
+    StatRecorder sr ("CSV to binary processing");
     while (!parser->eor ()) {
       VLOG ("Getting next record");
       const RecordPtr &record = parser->nextRecord ();
@@ -66,7 +68,8 @@ public:
 
   /* Process the data and notify registered writers */
   void process () {
-    DLOG ("started processing binary to csv"); 
+    DLOG ("started processing binary to csv");
+    StatRecorder sr ("Binary to csv processing");
     while (!parser->eor ()) {
       VLOG ("Getting next record");
       const RecordPtr &record = parser->nextRecord ();

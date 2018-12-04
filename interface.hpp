@@ -135,4 +135,16 @@ struct Datetime {
     return sizeof (_datetime);
   }
 };
+
+/*
+  Stat interface to record statistics
+*/
+class IStat {
+public:
+  virtual void start (const std::string &key) = 0;
+  virtual void end (const std::string &key) = 0;
+  virtual std::string toString () = 0;
+};
+
+typedef std::shared_ptr<IStat> IStatPtr;
 #endif

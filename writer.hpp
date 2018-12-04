@@ -6,6 +6,7 @@
 
 #include "interface.hpp"
 #include "logger.hpp"
+#include "statistics.hpp"
 
 class BinaryWriter : public IWriter {
   std::ofstream file;
@@ -34,6 +35,7 @@ public:
 
   // TODO: Optimize it by writing it to local buffer and flush on disk in chunks
   void write (const ByteBuffer &buffer) {
+    StatRecorder sr ("Writing binary data");
     VLOG ("Writing data to file of size: " + std::to_string (buffer.size ()));
     file.write (buffer.c_str (), buffer.size ());
     VLOG ("Data written to file");
@@ -75,6 +77,7 @@ public:
   }
 
   void write (const ByteBuffer &buffer) {
+    StatRecorder sr ("Writing csv");
     VLOG ("Writing data of size: " + std::to_string (buffer.size ()));
     VLOG ("Data: " + std::string (buffer.c_str ()));
     file.write (buffer.c_str (), buffer.size ());
