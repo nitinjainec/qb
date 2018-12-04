@@ -31,12 +31,11 @@ public:
     VLOG ("Notified: " + record->recordTypeName ());
     std::string record_str = record->toString ();
     record_str.append ("\n");
-    std::cout << record_str.c_str () << "\n";
     write (record_str.c_str ());
   }
 
   void write (const ByteBuffer &buffer) {
-    StatRecorder sr ("Writing csv");
+    StatRecorder sr ("Writing csv file");
     VLOG ("Writing data of size: " + std::to_string (buffer.size ()));
     VLOG ("Data: " + std::string (buffer.c_str ()));
     file.write (buffer.c_str (), buffer.size ());

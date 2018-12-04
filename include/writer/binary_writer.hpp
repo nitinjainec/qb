@@ -35,7 +35,7 @@ public:
 
   // TODO: Optimize it by writing it to local buffer and flush on disk in chunks
   void write (const ByteBuffer &buffer) {
-    StatRecorder sr ("Writing binary data");
+    StatRecorder sr ("Writing binary file");
     VLOG ("Writing data to file of size: " + std::to_string (buffer.size ()));
     file.write (buffer.c_str (), buffer.size ());
     VLOG ("Data written to file");

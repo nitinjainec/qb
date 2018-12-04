@@ -16,7 +16,7 @@ class CSVReader : public IReader {
   std::ifstream file;
 
   void readData () {
-    StatRecorder sr ("Reading Data");
+    StatRecorder sr ("Reading csv file");
     DLOG("Reading csv");
     data.clear ();
     idx = 0;

@@ -7,15 +7,16 @@
 #include <memory>
 
 
-#ifndef DEBUG
+#ifdef DEBUG
 #define VLOG(x) Logger::get ()->log (typeid(*this).name(), Logger::VERBOSE, x)
 #define VSLOG(x) Logger::get ()->log ("STATIC", Logger::VERBOSE, x)
+#define DLOG(x) Logger::get ()->log (typeid(*this).name(), Logger::DEBUG, x)
 #else
 #define VLOG(x) ;
 #define VSLOG(x) ;
+#define DLOG(x) ;
 #endif
 
-#define DLOG(x) Logger::get ()->log (typeid(*this).name(), Logger::DEBUG, x)
 
 /*
   Simple logger class to log message on output stream

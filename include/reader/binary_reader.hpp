@@ -16,7 +16,7 @@ class BinaryReader : public IReader {
   bool data_read;
 
   void readData () {
-    StatRecorder sr ("Reading binary data");
+    StatRecorder sr ("Reading binary file");
     count = 0;
     if (file.eof ())
       return;

@@ -36,28 +36,12 @@ void binaryToCSV () {
   processor->process ();
 }
 
-void test () {
-  IReaderPtr reader (new CSVReader ("qb.csv"));
-  IParserPtr parser (new CSVParser (reader));
-  RecordPtr record = parser->nextRecord ();
-  const ByteBuffer &buffer = record->toByteBuffer ();
-  const char *ch = buffer.c_str ();
-
-  //assert (*(reinterpret_cast<const RecordType *>(ch)) == QUOTE);
-}
-
 int main () {
   Logger::create ();
-
-#if 0
-  test ();
-  return 0;
-#endif
   try {
+    StatRecorder sr ("Main");
     csvToBinary ();
     binaryToCSV ();
-
-    std::cout << "-------------------\n";
     StatRecorder::display (std::cout);
   }
   catch (const std::exception& ex) {

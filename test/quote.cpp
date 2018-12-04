@@ -1,90 +1,14 @@
-
-#include "logger.hpp"
-#include "parser.hpp"
-#include "processor.hpp"
-#include "reader.hpp"
-#include "writer.hpp"
+#include <util/logger.hpp>
+#include <parser/csv_parser.hpp>
+#include <processor/processor.hpp>
+#include <reader/csv_reader.hpp>
 
 using namespace std;
-
-void test () {
-  IReaderPtr reader (new CSVReader ("qb.csv"));
-  IParserPtr parser (new CSVParser (reader));
-  RecordPtr record = parser->nextRecord ();
-  const ByteBuffer &buffer = record->toByteBuffer ();
-  Quote q (buffer);
-
-  cout << "\n\n------------------ \n";
-  cout << q.time.toString () << "\n";
-  cout << q.symbol << "\n";
-  cout << q.bid << "\n";
-  cout << q.ask << "\n";
-  cout << q.bsize << "\n";
-  cout << q.asize << "\n";
-  cout << " ------------------ \n\n";
-  
-  const char *ch = buffer.c_str ();
-
-
-  RecordType rt;
-  memcpy (&rt, ch, sizeof (rt));
-  ch += sizeof (rt);
-  assert (rt == QUOTE);
-
-  char sym[5];
-  memcpy (sym, ch, 5);
-  sym [4] = '\0';
-  ch += 5;
-  cout << sym << "\n";
-  
-  char chd[24];
-  memcpy (chd, ch, 23);
-  chd [23] = '\0';
-  ch += 23;
-  cout << chd << "\n";
-
-  double bid;
-  memcpy (&bid, ch, sizeof (bid));
-  ch += sizeof (bid);
-  cout << bid << "\n";
-
-  double ask;
-  memcpy (&ask, ch, sizeof (ask));
-  ch += sizeof (ask);
-  cout << ask << "\n";
-
-  
-  uint32_t bsize;
-  memcpy (&bsize, ch, sizeof (bsize));
-  ch += sizeof (bsize);
-  cout << bsize << "\n";
-
-  uint32_t asize;
-  memcpy (&asize, ch, sizeof (asize));
-  ch += sizeof (asize);
-  cout << asize << "\n";
-
-  
-  /*
-  
-
-    buffer.append (time.toByteBuffer ());
-    buffer.append (symbol, sizeof (symbol));
-    buffer.append ((char *)&bid, sizeof (bid));
-    buffer.append ((char *)&ask, sizeof (ask));
-    buffer.append ((char *)&bsize, sizeof (bsize));
-    buffer.append ((char *)&asize, sizeof (asize));
-    return buffer;
-  */
-  
-
-  //assert (*(reinterpret_cast<const RecordType *>(ch)) == QUOTE);
-}
 
 class MockReader : public IReader {
   bool _eod;
 public:
-  
+
   MockReader () : _eod (false) { }
   ByteBuffer getData () {
     _eod = true;
@@ -93,7 +17,7 @@ public:
   bool eod () { return _eod; }
 };
 
-void test2 () {
+void testQuote () {
   IReaderPtr reader (new MockReader ());
   IParserPtr parser (new CSVParser (reader));
 
@@ -107,12 +31,10 @@ void test2 () {
   RecordPtr record_b = RecordFactory::create (buffer);
 
   assert (record_a->toString () == record_b->toString ());
-  std::cout << "Quote test passed";
+  std::cout << "Quote test passed\n";
 }
 
 int main () {
   Logger::create ();
-    
-  //test ();
-  test2 ();
+  testQuote ();
 }

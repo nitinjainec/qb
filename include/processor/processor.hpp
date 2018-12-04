@@ -31,7 +31,7 @@ public:
   /* Process the data and notify registered writers */
   void process () {
     DLOG ("started processing csv to binary");
-    StatRecorder sr ("CSV to binary processing");
+    StatRecorder sr ("Processing");
     while (!parser->eor ()) {
       VLOG ("Getting next record");
       const RecordPtr &record = parser->nextRecord ();
