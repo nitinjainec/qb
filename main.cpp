@@ -55,6 +55,9 @@ int main () {
   try {
     csvToBinary ();
     binaryToCSV ();
+
+    std::cout << "-------------------\n";
+    StatRecorder::display (std::cout);
   }
   catch (const std::exception& ex) {
     std::cout << "Exception: " << ex.what () << "\n";
