@@ -67,7 +67,10 @@ public:
 
   void notify (const RecordPtr &record) {
     VLOG ("Notified: " + record->recordTypeName ());
-    write (record->toString ());
+    std::string record_str = record->toString ();
+    record_str.append ("\n");
+    std::cout << record_str.c_str () << "\n";
+    write (record_str.c_str ());
   }
 
   void write (const ByteBuffer &buffer) {

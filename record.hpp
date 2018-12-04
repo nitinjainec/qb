@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <string.h>
+#include <sstream>
 
 namespace {
 
@@ -75,8 +76,8 @@ struct Quote : public Record {
       + "," + std::to_string (bid)
       + "," + std::to_string (ask)
       + "," + std::to_string (bsize)
-      + "," + std::to_string (asize)
-      + std::string ('\0', 1);
+      + "," + std::to_string (asize);
+    //+ std::string ('\0', 1);
   }
   
   static constexpr RecordType recordType () {
@@ -152,10 +153,11 @@ struct Trade : public Record {
   }
 
   std::string toString () {
-    return (condition == 0xff)
-      ? time.toString () + "," + symbol + "," + std::to_string (price)
-      : (time.toString () + "," + symbol + "," + std::to_string (price)
-	 + "," + std::string (condition, 1)) + std::string ('\0', 1);
+    std::stringstream ss;
+    ss << time.toString () << "," << symbol << "," << price;
+    if (condition != 0xff)
+      ss << "," << condition;
+    return ss.str ();
   }
 
   static constexpr RecordType recordType () {
@@ -182,11 +184,13 @@ struct Signal : public Record {
 
     const char *ch = buffer.c_str ();
     RecordType rt = static_cast <RecordType> (*ch);
-    assert (rt == TRADE);
+    assert (rt == SIGNAL);
     ch += sizeof (RecordType);
 
     copy (symbol, &ch, sizeof (symbol));
+    VLOG ("symbol: " + std::string (symbol));
     time = ch;
+    VLOG ("time: " + time.toString());
     ch += time.size ();
     copy ((char *)&value, &ch, sizeof (value));
     copy ((char *)&code, &ch, sizeof (code));
@@ -218,10 +222,9 @@ struct Signal : public Record {
   }
 
   std::string toString () {
-    return time.toString ()
-      + "," + symbol
-      + "," + std::to_string (value)
-      + "," + std::to_string (code) + std::string ('\0', 1);
+    std::stringstream ss;
+    ss << time.toString () << "," << symbol << "," << value << "," << code;
+    return ss.str ();
   }
 
   static constexpr RecordType recordType () {

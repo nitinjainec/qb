@@ -50,6 +50,8 @@ class RecordFactory {
     case Trade::recordType (): return Trade::size ();
     case Signal::recordType (): return Signal::size ();
     }
+    VSLOG (std::to_string (rt));
+    assert (false);
   }
 
   static RecordPtr createQuote (const ByteBuffer &buffer) {

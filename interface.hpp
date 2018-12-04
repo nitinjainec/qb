@@ -100,31 +100,39 @@ public:
 };
 
 struct Datetime {
-  std::string datetime;
-  Datetime () : datetime ("YYYY-MM-DD HH:MM:SS.MSS") {}
+  char _datetime[24];
+  Datetime () {
+    memset (_datetime, 'a', size () - 1);
+    _datetime [size () - 1] = '\0';
+  }
   Datetime (const std::string &datetime)
-    : datetime (datetime)
   {
-    VLOG ("Datetime constructed");
-    VLOG ("Datetime size: " + std::to_string (datetime.size ()));
+    assert (datetime.size () == size () - 1);
+    memcpy (_datetime, datetime.c_str (), datetime.size ());
+    _datetime [size () - 1] = '\0';
   }
 
-  Datetime& operator= (const std::string &buffer) {
-    VLOG ("Datetime size: " + std::to_string (size()));
-    datetime = std::string (buffer.c_str (), size ());
+  Datetime (const char *ch) {
+    memcpy (_datetime, ch, size () - 1);
+    _datetime [size () - 1] = '\0';
+  }
+
+  Datetime& operator= (const char *ch) {
+    memcpy (_datetime, ch, size () - 1);
+    _datetime [size () - 1] = '\0';
+    return *this;
   }
 
   std::string toString () {
-    return datetime;
+    return std::string (_datetime);
   }
 
   ByteBuffer toByteBuffer () {
-    return datetime;
+    return ByteBuffer (_datetime, size ());
   }
   
   static size_t size () {
-    char ch [] = "YYYY-MM-DD HH:MM:SS.MSS";
-    return sizeof (ch) - 1;
+    return sizeof (_datetime);
   }
 };
 #endif

@@ -86,7 +86,10 @@ public:
 
   /* erase bytes from begining */
   void erase (size_t size) {
-    memcpy (_cptr, _cptr+size, _size - size);
+    char *ch = new char [1024];
+    memcpy (ch, _cptr+size, _size - size);
+    memcpy (_cptr, ch, _size - size);
+    //memcpy (_cptr, _cptr+size, _size - size);
     _size -= size;
   }
   
