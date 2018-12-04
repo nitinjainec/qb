@@ -5,6 +5,7 @@
 #include <string>
 
 #include "interface.hpp"
+#include "logger.hpp"
 
 class BinaryWriter : public IWriter {
   std::ofstream file;

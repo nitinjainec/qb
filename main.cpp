@@ -1,5 +1,7 @@
 #include <iostream>
 
+#include "binary_readers.hpp"
+#include "binary_writers.hpp"
 #include "logger.hpp"
 #include "parser.hpp"
 #include "processor.hpp"
@@ -10,14 +12,21 @@ void csvToBinary () {
   IReaderPtr reader (new CSVReader ("qb.csv"));
   IParserPtr parser (new CSVParser (reader));
   IProcessorPtr processor (new CSVToBinaryProcessor (parser));
-  IWriterPtr writer (new BinaryWriter ("filename.txt"));
+  //IWriterPtr writer (new BinaryWriter ("filename.txt"));
+  IWriterPtr writer (new BinaryWriters ("Symbol-"));
 
   processor->registerWriter (writer);
   processor->process ();
 }
 
 void binaryToCSV () {
-  IReaderPtr reader (new BinaryReader ("filename.txt"));
+//IReaderPtr reader (new BinaryReader ("filename.txt"));
+std::vector <std::string> filenames;
+filenames.push_back ("Symbol-ZBM3");
+filenames.push_back ("Symbol-ZNM3");
+
+IReaderPtr reader (new BinaryReaders (filenames));
+
   IParserPtr parser (new BinaryParser (reader));
   IProcessorPtr processor (new BinaryToCSVProcessor (parser));
   IWriterPtr writer (new CSVWriter ("output.csv"));

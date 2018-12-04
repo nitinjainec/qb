@@ -19,9 +19,6 @@ public:
   /* returns data buffer */
   virtual ByteBuffer getData () = 0;
 
-  /* returns length of characters read in last call to getData () */
-  virtual size_t length () = 0;
-  
   /* returns true if end of data is reached */
   virtual bool eod () = 0;
 };
@@ -43,6 +40,9 @@ struct Record {
   int32_t id;
   virtual ByteBuffer toByteBuffer () = 0;
   virtual std::string toString () = 0;
+
+  /* Returns record symbol */
+  virtual std::string symbolName () = 0;
 
   /* Returns size of the record */
   virtual size_t vsize () = 0;

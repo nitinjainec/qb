@@ -87,7 +87,11 @@ struct Quote : public Record {
   std::string recordTypeName () {
     return "QUOTE";
   }
-  
+
+  std::string symbolName () {
+    return symbol;
+  }
+
   size_t vsize () { return size (); }
 
   Datetime time;
@@ -171,6 +175,10 @@ struct Trade : public Record {
   }
   
   size_t vsize () { return size (); }
+
+  std::string symbolName () {
+    return symbol;
+  }
   
   Datetime time;
   char symbol[5];
@@ -239,6 +247,10 @@ struct Signal : public Record {
 
   size_t vsize () { return size (); }
  
+  std::string symbolName () {
+    return symbol;
+  }
+
   Datetime time;
   char symbol[5];
   double value;

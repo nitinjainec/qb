@@ -45,11 +45,6 @@ public:
     return data[idx++];
   }
 
-  /* Returns length of characters */
-  size_t length () {
-    return data[idx-1].size ();
-  }
-
   /* Returns true for end of data */
   bool eod () {
     if (idx < data.size ())
