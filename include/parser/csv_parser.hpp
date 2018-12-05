@@ -6,7 +6,7 @@
 #include <sstream>
 
 #include <interface.hpp>
-#include <record/record_factory.hpp>
+#include <record_factory/csv_record_factory.hpp>
 #include <statistics/stat_recorder.hpp>
 #include <util/logger.hpp>
 #include <util/util.hpp>
@@ -15,8 +15,8 @@
  * Class to parse CSV data received from CSVReader
  */
 class CSVParser : public IParser {
-  IReaderPtr reader;
-  std::string delimeter;
+  IReaderPtr _reader;
+  CSVRecordFactoryPtr _factory;
 
   RecordPtr parseBufferToRecord (ByteBuffer &buffer) {
     StatRecorder sr ("Parsing record from csv");
@@ -27,26 +27,26 @@ class CSVParser : public IParser {
     }
     fields.push_back (util::trim
 		      (std::string(buffer.c_str (), buffer.size ())));
-    return RecordFactory::create (fields);
+    return _factory->createRecord (fields);
   }
 
 public:
-  CSVParser (const IReaderPtr &reader, const std::string &delimeter = ",")
-    : reader (reader)
-    , delimeter (delimeter)
+  CSVParser (const IReaderPtr &reader, const CSVRecordFactoryPtr &factory)
+    : _reader (reader)
+    , _factory (factory)
   {}
 
   /* Parses the data and returns next record */
   RecordPtr nextRecord () {
     StatRecorder sr ("Parse csv to Record");
     assert (!eor ());
-    ByteBuffer buffer = reader->getData ();
+    ByteBuffer buffer = _reader->getData ();
     return parseBufferToRecord (buffer);
   }
 
   /* Returns true when end of record is reached */
   bool eor () {
-    return reader->eod ();
+    return _reader->eod ();
   }
 };
 

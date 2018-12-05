@@ -2,6 +2,8 @@
 
 #include <reader/binary_readers.hpp>
 #include <reader/csv_reader.hpp>
+#include <record_factory/binary_record_factory.hpp>
+#include <record_factory/csv_record_factory.hpp>
 #include <parser/binary_parser.hpp>
 #include <parser/csv_parser.hpp>
 #include <processor/processor.hpp>
@@ -18,7 +20,8 @@ const std::string FILE_PREFIX= "Symbol-";
 
 void csvToBinary () {
   IReaderPtr reader (new CSVReader (INPUT_FILE));
-  IParserPtr parser (new CSVParser (reader));
+  CSVRecordFactoryPtr factory (new CSVRecordFactory ());
+  IParserPtr parser (new CSVParser (reader, factory));
   IProcessorPtr processor (new Processor (parser));
   IWriterPtr writer (new BinaryWriters (OUTPUT_DIR + FILE_PREFIX));
 
@@ -29,7 +32,8 @@ void csvToBinary () {
 void binaryToCSV () {
   std::vector <std::string> filenames = util::linux::listDirectory (OUTPUT_DIR, FILE_PREFIX);
   IReaderPtr reader (new BinaryReaders (filenames));
-  IParserPtr parser (new BinaryParser (reader));
+  BinaryRecordFactoryPtr factory (new BinaryRecordFactory ());  
+  IParserPtr parser (new BinaryParser (reader, factory));
   IProcessorPtr processor (new Processor (parser));
   IWriterPtr writer (new CSVWriter ("output.csv"));
   processor->registerWriter (writer);

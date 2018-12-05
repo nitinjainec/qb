@@ -7,6 +7,7 @@
 #include <processor/processor.hpp>
 #include <reader/binary_readers.hpp>
 #include <reader/csv_reader.hpp>
+#include <record_factory/csv_record_factory.hpp>
 #include <writer/binary_writers.hpp>
 #include <writer/csv_writer.hpp>
 
@@ -17,7 +18,8 @@ class EndToEndTest : public UnitTest {
 
   void csvToBinary () {
     IReaderPtr reader (new CSVReader ("../../test/data/qb.csv"));
-    IParserPtr parser (new CSVParser (reader));
+    CSVRecordFactoryPtr factory (new CSVRecordFactory ());
+    IParserPtr parser (new CSVParser (reader, factory));
     IProcessorPtr processor (new Processor (parser));
     IWriterPtr writer (new BinaryWriters (_prefix));
     processor->registerWriter (writer);
@@ -30,7 +32,8 @@ class EndToEndTest : public UnitTest {
     filenames.push_back (_prefix + "ZNM3");
 
     IReaderPtr reader (new BinaryReaders (filenames));
-    IParserPtr parser (new BinaryParser (reader));
+    BinaryRecordFactoryPtr factory (new BinaryRecordFactory ());
+    IParserPtr parser (new BinaryParser (reader, factory));
     IProcessorPtr processor (new Processor (parser));
     IWriterPtr writer (new CSVWriter ("output.csv"));
     processor->registerWriter (writer);

@@ -14,23 +14,26 @@ Files:
 Interfaces:
   All interfaces (abstract classes) are defined in include/interface.hpp
 
-  - IReader    : reads the data. Can be extended to read data from file,
-    	       	 database, network and etc.
-                 It can also be extended to spawn multiple read threads.
-  - IRecord    : defines record interface. Can be extended to represent quote,
-    	       	 trade and signal.
-  - IParser    : parses the data read by IReader and returns an object of type
-    	         IRecord. It can be extended to parser different types of data
-		 as csv, binary and etc.
-  - IProcessor : process the IRecord which is parsed by IParser. It then
-    	       	 notifies the IWriter/s.
-  - IWriter    : writes the record on receiving notification from IProcessor.
-    	         Can be extended to write data to file, database, network and
-		 etc. It can be extended to spawn multiple writer threads.
-  - IStat      : interface to record statistics of a function, thread or a
-    	         process. It is orthogonal (independent) to above interfaces
-		 and can be plugged into any member function or class object.
-		 It can be extended to record memory stat, time stat and etc.
+  - IReader        : reads the data. Can be extended to read data from file,
+    	       	     database, network and etc.
+		     It can also be extended to spawn multiple read threads.
+  - IRecord        : defines record interface. Can be extended to represent
+    		     quote,trade and signal.
+  - IRecordFactory : defines templatized factory pattern. Extended to create
+    		     Record object (quote, trade, quote) for std::string and
+		     byte buffer.
+  - IParser        : parses the data read by IReader and returns an object of
+    		     type IRecord. It can be extended to parser different types
+		     of data as csv, binary and etc.
+  - IProcessor     : process the IRecord which is parsed by IParser. It then
+    	       	     notifies the IWriter/s.
+  - IWriter    	   : writes record on receiving notification from IProcessor.
+    	             Can be extended to write data to file, database, network
+		     and etc. It can be extended to spawn multiple writers.
+  - IStat          : interface to record statistics of a function, thread or a
+    	             process. It is orthogonal (independent) to above interface
+		     and can be plugged to any member function or class object.
+		     It can be extended to record memory, time stat and etc.
 
 Utils:
   Utility function and libraries used within the project are defined under

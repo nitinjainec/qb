@@ -12,9 +12,9 @@ namespace constants {
 }
 
 /*
-  Reader interface to get data.
-  Can be extended to fetch data from file, database, network etc.
-*/
+ * Reader interface to get data.
+ * Can be extended to fetch data from file, database, network etc.
+ */
 class IReader {
 public:
   /* returns data as ByteBuffer */
@@ -33,9 +33,9 @@ enum RecordType {
 };
 
 /*
-  Record base structure.
-  Can be extended to Quote, Trade, Signal records.
-*/
+ * Record base structure.
+ * Can be extended to Quote, Trade, Signal records.
+ */
 struct Record {
   /* returns record as ByteBuffer */
   virtual ByteBuffer toByteBuffer () = 0;
@@ -58,8 +58,22 @@ struct Record {
 typedef std::shared_ptr<Record> RecordPtr;
 
 /*
-  Parser interface to parse data read by IReader.
-*/
+ * Record Factory interface
+ */
+template <typename T>
+class IRecordFactory {
+public:
+  typedef std::shared_ptr<IRecordFactory <T> > Ptr;
+  /* returns true if Record can be created with given data */
+  virtual bool canCreateRecord (const T& data) = 0;
+
+  /* creates the record with given data */
+  virtual RecordPtr createRecord (const T& data) = 0;
+};
+
+/*
+ * Parser interface to parse data read by IReader.
+ */
 class IParser {
 public:
   /* returns single record */
@@ -71,9 +85,9 @@ public:
 typedef std::shared_ptr<IParser> IParserPtr;
 
 /*
-  Writer interface to write the data.
-  Can be extended to write the output to a file, database, network etc.
-*/
+ * Writer interface to write the data.
+ * Can be extended to write the output to a file, database, network etc.
+ */
 class IWriter {
 public:
 
@@ -86,21 +100,21 @@ public:
 typedef std::shared_ptr<IWriter> IWriterPtr;
 
 /*
-  Processor interface to process data and notify registered IWriter/s.
-*/
+ * Processor interface to process data and notify registered IWriter/s.
+ */
 class IProcessor {
 public:
   /* register IWriter to receive notification once record is processed */
   virtual void registerWriter (const IWriterPtr &writer) = 0;
-
+  
   /* process the data */
   virtual void process () = 0;
 };
 typedef std::shared_ptr<IProcessor> IProcessorPtr;
 
 /*
-  Stat interface to record statistics
-*/
+ * Stat interface to record statistics
+ */
 class IStat {
 public:
   /* start recording the statistics */

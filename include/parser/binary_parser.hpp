@@ -6,7 +6,7 @@
 #include <sstream>
 
 #include <interface.hpp>
-#include <record/record_factory.hpp>
+#include <record_factory/binary_record_factory.hpp>
 #include <statistics/stat_recorder.hpp>
 #include <util/logger.hpp>
 #include <util/util.hpp>
@@ -17,16 +17,17 @@
 class BinaryParser : public IParser {
   IReaderPtr _reader;
   ByteBuffer _buffer;
+  BinaryRecordFactoryPtr _factory;
 
   RecordPtr parseBufferToRecord () {
     StatRecorder sr ("Parsing record from binary");
-    RecordPtr record (RecordFactory::create (_buffer));
+    RecordPtr record (_factory->createRecord (_buffer));
     _buffer.erase (record->size ());
     return record;
   }
 
   bool canParseBufferToRecord () {
-    return RecordFactory::canCreate (_buffer);
+    return _factory->canCreateRecord (_buffer);
   }
 
   void getData () {
@@ -35,10 +36,11 @@ class BinaryParser : public IParser {
   }
 
 public:
-  BinaryParser (const IReaderPtr &reader)
+  BinaryParser (const IReaderPtr &reader, const BinaryRecordFactoryPtr factory)
     : _reader (reader)
     , _buffer (2 * constants::FILE_BUFFER_SIZE)
-  { }
+    , _factory (factory)
+  {}
 
   /* Parses binary data and returns next Record */
   RecordPtr nextRecord () {

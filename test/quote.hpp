@@ -2,6 +2,8 @@
 #include <parser/csv_parser.hpp>
 #include <processor/processor.hpp>
 #include <reader/csv_reader.hpp>
+#include <record_factory/binary_record_factory.hpp>
+#include <record_factory/csv_record_factory.hpp>
 
 #include "unit_test.hpp"
 
@@ -21,7 +23,8 @@ class QuoteTest : public UnitTest {
 
   void testSerializeAndDeSerialize () {
     IReaderPtr reader (new MockReader ());
-    IParserPtr parser (new CSVParser (reader));
+    CSVRecordFactoryPtr factory (new CSVRecordFactory ());
+    IParserPtr parser (new CSVParser (reader, factory));
     
     assert (!parser->eor ());
     RecordPtr record_a = parser->nextRecord ();
@@ -29,8 +32,9 @@ class QuoteTest : public UnitTest {
 
     ByteBuffer buffer = record_a->toByteBuffer ();
 
-    assert (RecordFactory::canCreate (buffer));
-    RecordPtr record_b = RecordFactory::create (buffer);
+    BinaryRecordFactory bfactory;
+    assert (bfactory.canCreateRecord (buffer));
+    RecordPtr record_b = bfactory.createRecord (buffer);
 
     assert (record_a->toString () == record_b->toString ());
     ++_test_passed;
