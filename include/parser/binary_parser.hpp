@@ -40,6 +40,7 @@ public:
   }
   
   RecordPtr nextRecord () {
+    StatRecorder sr ("Parser binary data to record");
     assert (!eor ());
     while (!canParseBufferToRecord ()
 	   && !eor ())

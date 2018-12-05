@@ -20,11 +20,12 @@ class CSVParser : public IParser {
     std::vector <std::string> fields;
     for (int idx = buffer.find (',');
 	 idx != -1; idx = buffer.find (',')) {
-      fields.push_back (std::string (buffer.c_str (), idx));
+      fields.push_back (util::trim (std::string (buffer.c_str (), idx)));
       buffer.erase (idx+1);
     }
     if (buffer.size () != 0)
-      fields.push_back (std::string (buffer.c_str (), buffer.size ()));
+      fields.push_back (util::trim (std::string (buffer.c_str (), buffer.size ())));
+
     return RecordFactory::create (fields);
 
     /*
@@ -51,6 +52,7 @@ public:
   }
   
   RecordPtr nextRecord () {
+    StatRecorder sr ("Parser csv to record");
     assert (!eor ());
     ByteBuffer buffer = reader->getData ();
     return parseBufferToRecord (buffer);

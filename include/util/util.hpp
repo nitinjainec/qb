@@ -12,6 +12,7 @@ namespace util {
     s.erase (s.begin (),
 	     std::find_if (s.begin (), s.end (),
 			   [] (int ch) {return !std::isspace (ch);}));
+    //return s;
   }
 
   /* in place right trim */
@@ -22,9 +23,32 @@ namespace util {
   }
   
   /* in place trim from both ends */
-  void trim (std::string &s) {
+  inline void trim (std::string &s) {
     ltrim (s);
     rtrim (s);
+  }
+
+  /* in place left trime */
+  inline std::string &ltrim (std::string &&s) {
+    s.erase (s.begin (),
+	     std::find_if (s.begin (), s.end (),
+			   [] (int ch) {return !std::isspace (ch);}));
+    return s;
+  }
+
+  /* in place right trim */
+  inline std::string &rtrim (std::string &&s) {
+    s.erase (std::find_if (s.rbegin (), s.rend (),
+			   [](int ch) { return !std::isspace (ch); }).base (),
+	     s.end ());
+    return s;
+  }
+
+  /* in place trim from both ends */
+  inline std::string& trim (std::string &&s) {
+    ltrim (s);
+    rtrim (s);
+    return s;
   }
 
   void copy (char *dest, const char** src, size_t size) {
