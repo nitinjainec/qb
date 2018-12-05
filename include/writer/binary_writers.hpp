@@ -36,7 +36,6 @@ public:
   }
 
   void write (const ByteBuffer &buffer) {
-    StatRecorder sr ("Invoking writer to write");
     assert (_writer);
     _writer->write (buffer);
     _writer.reset ();

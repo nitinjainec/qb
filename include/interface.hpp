@@ -7,8 +7,7 @@
 #include <util/byte_buffer.hpp>
 
 namespace constants {
-  const int BUFFER_SIZE = 1024;
-  const size_t FILE_BUFFER_SIZE = 1024 * 1024;
+  const size_t FILE_BUFFER_SIZE = 1024 * 1024; // 1 MB
 }
 
 /*

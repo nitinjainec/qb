@@ -18,9 +18,7 @@ class Processor : public IProcessor {
 public:
   Processor (const IParserPtr &parser)
     : parser (parser)
-  {
-    DLOG ("Processor constructed");
-  }
+  {}
 
   /* Register writer */
   void registerWriter (const IWriterPtr &writer) {
@@ -42,5 +40,4 @@ public:
   }
 };
 
-
-#endif
+#endif // __PROCESSOR_HPP__

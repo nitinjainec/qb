@@ -44,7 +44,6 @@ public:
 
   /* Parses binary data and returns next Record */
   RecordPtr nextRecord () {
-    StatRecorder sr ("Parse binary data to Record");
     assert (!eor ());
     while (!canParseBufferToRecord () && !eor ())
       getData ();

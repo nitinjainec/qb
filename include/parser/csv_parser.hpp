@@ -38,7 +38,6 @@ public:
 
   /* Parses the data and returns next record */
   RecordPtr nextRecord () {
-    StatRecorder sr ("Parse csv to Record");
     assert (!eor ());
     ByteBuffer buffer = _reader->getData ();
     return parseBufferToRecord (buffer);

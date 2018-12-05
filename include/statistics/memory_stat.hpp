@@ -87,12 +87,12 @@ public:
     ss << "--------Memory Statistic--------\n";
     for (auto &kv : _key_to_stat) {
       Stat &s = kv.second;
-      ss << "    " << kv.first << "\n";
-      ss << "        Count: " << s.count << "\n";
-      ss << "        Max current size increase: " << s.maxCurrentSizeInc << "\n";
-      ss << "        Max peak size increase: " << s.maxPeakSizeInc << "\n";
-      ss << "        Max current size: " << s.maxCurrentSize << "\n";
-      ss << "        Max peak size: " << s.maxPeakSize << "\n\n";
+      ss << "    " << kv.first << " bytes\n";
+      ss << "        Count: " << s.count << " bytes\n";
+      ss << "        Max current size increase: " << s.maxCurrentSizeInc << " bytes\n";
+      ss << "        Max peak size increase: " << s.maxPeakSizeInc << " bytes\n";
+      ss << "        Max current size: " << s.maxCurrentSize << " bytes\n";
+      ss << "        Max peak size: " << s.maxPeakSize << " bytes\n\n";
     }
     return ss.str ();
   }
