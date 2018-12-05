@@ -11,23 +11,24 @@
 #include <writer/binary_writers.hpp>
 #include <writer/csv_writer.hpp>
 
+
+const std::string INPUT_FILE = "../data/qb.csv";
+const std::string OUTPUT_DIR = "../output/";
+const std::string FILE_PREFIX= "Symbol-";
+
 void csvToBinary () {
-  IReaderPtr reader (new CSVReader ("../data/qb.csv"));
+  IReaderPtr reader (new CSVReader (INPUT_FILE));
   IParserPtr parser (new CSVParser (reader));
   IProcessorPtr processor (new Processor (parser));
-  IWriterPtr writer (new BinaryWriters ("../output/Symbol-"));
+  IWriterPtr writer (new BinaryWriters (OUTPUT_DIR + FILE_PREFIX));
 
   processor->registerWriter (writer);
   processor->process ();
 }
 
 void binaryToCSV () {
-  std::vector <std::string> filenames;
-  filenames.push_back ("../output/Symbol-ZBM3");
-  filenames.push_back ("../output/Symbol-ZNM3");
-
+  std::vector <std::string> filenames = util::linux::listDirectory (OUTPUT_DIR, FILE_PREFIX);
   IReaderPtr reader (new BinaryReaders (filenames));
-
   IParserPtr parser (new BinaryParser (reader));
   IProcessorPtr processor (new Processor (parser));
   IWriterPtr writer (new CSVWriter ("output.csv"));

@@ -25,6 +25,7 @@ public:
   {}
 
   void notify (const RecordPtr &record) {
+    assert (!_writer);
     if (_symbol_to_writer.find (record->symbolName ()) == _symbol_to_writer.end ()) {
       _writer.reset (new BinaryWriter (_prefix + record->symbolName ()));
       _symbol_to_writer[record->symbolName ()] = _writer;
@@ -35,6 +36,7 @@ public:
   }
 
   void write (const ByteBuffer &buffer) {
+    StatRecorder sr ("Invoking writer to write");
     assert (_writer);
     _writer->write (buffer);
     _writer.reset ();

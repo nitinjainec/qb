@@ -1,10 +1,11 @@
 #ifndef __UTIL_HPP__
 #define __UTIL_HPP__
 
-#include <algorithm>
-
-#include <unistd.h>
+#include <dirent.h>
 #include <sys/resource.h>
+#include <unistd.h>
+
+#include <algorithm>
 
 namespace util {
   /* in place left trime */
@@ -74,8 +75,7 @@ namespace util {
 
   namespace linux {
     /* Returns the current resident set size or 0 if the value cannot be read. */
-    size_t getCurrentRSS ( )
-    {
+    size_t getCurrentRSS () {
       long rss = 0L;
       size_t c_rss = 0;
       FILE* fp = NULL;
@@ -88,11 +88,25 @@ namespace util {
     }
 
     /* Returns max resident set size measured in bytes */
-    size_t getMaxRSS( )
-    {
+    size_t getMaxRSS () {
       struct rusage rusage;
       getrusage( RUSAGE_SELF, &rusage );
       return (size_t)(rusage.ru_maxrss * 1024L);
+    }
+
+    /* returns list of files in a directory with given prefix */
+    std::vector <std::string> listDirectory (const std::string& directory, const std::string &prefix = "") {
+      std::vector <std::string> files;
+      DIR* dirp = opendir (directory.c_str());
+      struct dirent * dp;
+      while ((dp = readdir (dirp)) != NULL) {
+	std::string file (dp->d_name);
+	auto res = std::mismatch(prefix.begin(), prefix.end(), file.begin());
+	if (res.first == prefix.end ())
+	  files.push_back (file);
+      }
+      closedir(dirp);
+      return files;
     }
   }
 }
