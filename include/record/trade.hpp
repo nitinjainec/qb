@@ -4,6 +4,8 @@
 #include <stdio.h>
 #include <string.h>
 #include <sstream>
+
+#include <util/datetime.hpp>
 #include <util/util.hpp>
 
 struct Trade : public Record {

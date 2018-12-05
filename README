@@ -1,6 +1,67 @@
-1. Considered simplicity over efficiency. However, efficiency can be easily achieved by just plugging in new class in existing design. For e.g. currently CSVReader reads file line by line which is in-efficient, we could easly write new class which reads chunk of data and process it to return line.
+Directory structure
+  - include : contains all include file
+  - src     : contains all source file.
+              TODO: Currently, methods are implemenented within header file.
+              They can be moved in their respective
+	      cc files under src directory.
+  - data    : contains any data file
+  - test    : contains test cases
 
-2. Currently processor and writer are within single thread. It could be extendend to run them in parallel threads.
+Files:
+  - *.sh    : few scripts, comes handy to build and run sources and test cases.
 
-3. 
+Interfaces:
+  All interfaces (abstract classes) are defined under include/interface.hpp
+
+  - IReader    : reads the data. Can be extended to read data from file,
+    	       	 database, network and etc.
+                 It can also be extended to spawn multiple read threads.
+  - Record     : defines record interface. Can be extended to represent quote,
+    	       	 trade and signal.
+  - IParser    : parses the data read by IReader and returns an object of type
+    	         Record. It can be extended to parser different types of data as
+		 csv, binary and etc.
+  - IProcessor : process the Record which is parsed by IParser. It then notifies
+    	         the IWriter/s.
+  - IWriter    : writes the record on receiving notification from IProcessor.
+    	         Can be extended to write data to file, database, network and
+		 etc. It can be extended to spawn multiple writer threads.
+  - IStat      : interface to record statistics of a function, thread or a
+    	         process. It is orthogonal (independent) to above interfaces
+		 and can be plugged into any member function or class object.
+		 It can be extended to record memory stat, time stat and etc.
+
+Utils:
+  Utility function and libraries used within the project are defined under
+  include/util
+
+  - ByteBuffer : Byte buffer implemenation which shared data object and performs
+       	 	 copy only on write.
+  - Logger     : class to log data. Currently it is very basic and had
+    	         interface which was used only for debugging.
+		 TODO: improve on logging
+  - Datetime   : datetime class to store date upto milliseconds.
+    	         TODO: currently date is stored in string format. Optimize it to
+		 use std::chrono lib or at least std::time and millisecond.
+
+Implementation:
+
+  - Simplicity is considered over efficiency. However, due to modular design
+    efficiency can be easily achieved by just plugging in new class in existing
+    framework. For e.g. Processor is single threaded class, a threaded processor
+    can be added which process the data in parallel. Same approach can be
+    extended to IReader and IWriter class.
+
+Questions:
+  - Should output csv file be exact match of input csv?
+    Currently, output csv is same as input csv, however the ordering is
+    different. If maintaing the order was also the requirement then IWriter
+    class needs to be extended to write sequence number before writing the data.
+    Similarly, IReader class needs to be extended to read sequence number and
+    return data in correct sequence.
+
+  - Statistics?
+    Its not very clear what all statistics needs to be captured. Is it only the
+    total time that needs to captured? For completness only basic time and 
+    memory information is captured.
 

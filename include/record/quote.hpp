@@ -5,6 +5,7 @@
 #include <string.h>
 #include <sstream>
 
+#include <util/datetime.hpp>
 #include <util/util.hpp>
 
 struct Quote : public Record {

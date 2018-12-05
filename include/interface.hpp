@@ -6,9 +6,11 @@
 
 #include <util/byte_buffer.hpp>
 
-
 const int BUFFER_SIZE = 1024;
-const int RECORD_SIZE_BYTES = sizeof (int16_t);
+
+namespace constants {
+  const int RECORD_SIZE_BYTES = sizeof (int16_t);
+}
 
 /*
   Reader interface to get data.
@@ -16,7 +18,7 @@ const int RECORD_SIZE_BYTES = sizeof (int16_t);
 */
 class IReader {
 public:
-  /* returns data buffer */
+  /* returns data as ByteBuffer */
   virtual ByteBuffer getData () = 0;
 
   /* returns true if end of data is reached */
@@ -35,28 +37,29 @@ enum RecordType {
   Record base structure.
   Can be extended to Quote, Trade, Signal records.
 */
-
 struct Record {
-  int32_t id;
+  /* returns record as ByteBuffer */
   virtual ByteBuffer toByteBuffer () = 0;
+
+  /* returns record as cs string */
   virtual std::string toString () = 0;
-
-  /* Returns record symbol */
-  virtual std::string symbolName () = 0;
-
-  /* Returns size of the record */
-  virtual size_t vsize () = 0;
-
-  /* Returns readable name of record type */
-  virtual std::string recordTypeName () = 0;
 
   /* Returns record type QUOTE, TRADE, SIGNAL */
   static RecordType recordType () { assert (false); }
+
+  /* returns readable name of record type */
+  virtual std::string recordTypeName () = 0;
+
+  /* returns record symbol name */
+  virtual std::string symbolName () = 0;
+
+  /* returns size of the record */
+  virtual size_t vsize () = 0;
 };
 typedef std::shared_ptr<Record> RecordPtr;
 
 /*
-  Parser interface to parse data read by Reader.
+  Parser interface to parse data read by IReader.
 */
 class IParser {
 public:
@@ -68,10 +71,6 @@ public:
 };
 typedef std::shared_ptr<IParser> IParserPtr;
 
-/* Forward declaration */
-class IProcessor;
-typedef std::shared_ptr<IProcessor> IProcessorPtr;
-
 /*
   Writer interface to write the data.
   Can be extended to write the output to a file, database, network etc.
@@ -79,72 +78,40 @@ typedef std::shared_ptr<IProcessor> IProcessorPtr;
 class IWriter {
 public:
 
-  /* Notify writer to persist the record */
+  /* interface for receiving notification to persist the record */
   virtual void notify (const RecordPtr &record) = 0;
 
-  /* writes the given buffer */
+  /* writes the given ByteBuffer */
   virtual void write (const ByteBuffer &buffer) = 0;
 };
 typedef std::shared_ptr<IWriter> IWriterPtr;
 
 /*
-  Processor interface to process data and notify registered writers.
+  Processor interface to process data and notify registered IWriter/s.
 */
 class IProcessor {
 public:
-  /* Register writers to get update once record is processed */
+  /* register IWriter to receive notification once record is processed */
   virtual void registerWriter (const IWriterPtr &writer) = 0;
 
   /* process the data */
   virtual void process () = 0;
 };
-
-struct Datetime {
-  char _datetime[24];
-  Datetime () {
-    memset (_datetime, 'a', size () - 1);
-    _datetime [size () - 1] = '\0';
-  }
-  Datetime (const std::string &datetime)
-  {
-    assert (datetime.size () == size () - 1);
-    memcpy (_datetime, datetime.c_str (), datetime.size ());
-    _datetime [size () - 1] = '\0';
-  }
-
-  Datetime (const char *ch) {
-    memcpy (_datetime, ch, size () - 1);
-    _datetime [size () - 1] = '\0';
-  }
-
-  Datetime& operator= (const char *ch) {
-    memcpy (_datetime, ch, size () - 1);
-    _datetime [size () - 1] = '\0';
-    return *this;
-  }
-
-  std::string toString () {
-    return std::string (_datetime);
-  }
-
-  ByteBuffer toByteBuffer () {
-    return ByteBuffer (_datetime, size ());
-  }
-  
-  static size_t size () {
-    return sizeof (_datetime);
-  }
-};
+typedef std::shared_ptr<IProcessor> IProcessorPtr;
 
 /*
   Stat interface to record statistics
 */
 class IStat {
 public:
+  /* start recording the statistics */
   virtual void start (const std::string &key) = 0;
+
+  /* stop recording the statistics */
   virtual void end (const std::string &key) = 0;
+
+  /* return statistics as string */
   virtual std::string toString () = 0;
 };
-
 typedef std::shared_ptr<IStat> IStatPtr;
 #endif
