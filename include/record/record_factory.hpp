@@ -71,6 +71,13 @@ class RecordFactory {
     return RecordPtr (new Signal (buffer));
   }
 public:
+  static RecordPtr create (const std::vector<ByteBuffer> &buffers) {
+    std::vector <std::string> fields;
+    for (auto &buffer : buffers) {
+      fields.push_back (std::string (buffer.c_str (), buffer.size ()));
+    }
+    create (fields);
+  }
   static RecordPtr create (const std::vector<std::string> &fields) {
     assert (fields.size () == 3
 	    || fields.size () == 4

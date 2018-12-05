@@ -15,15 +15,30 @@ class CSVParser : public IParser {
   IReaderPtr reader;
   std::string delimeter;
 
-  RecordPtr parseBufferToRecord (const ByteBuffer &buffer) {
+  RecordPtr parseBufferToRecord (ByteBuffer &buffer) {
     StatRecorder sr ("Parsing record from csv");
     std::vector <std::string> fields;
-    std::istringstream s (buffer.c_str ());
-    for (std::string field; std::getline (s, field, ','); ) {
-      util::trim (field);
-      fields.push_back (field);
+    for (int idx = buffer.find (',');
+	 idx != -1; idx = buffer.find (',')) {
+      fields.push_back (std::string (buffer.c_str (), idx));
+      buffer.erase (idx+1);
     }
+    if (buffer.size () != 0)
+      fields.push_back (std::string (buffer.c_str (), buffer.size ()));
     return RecordFactory::create (fields);
+
+    /*
+    StatRecorder sr ("Parsing record from csv");
+    std::vector <ByteBuffer> fields;
+    for (int idx = buffer.find (',');
+	 idx != -1; idx = buffer.find (',')) {
+      fields.push_back (ByteBuffer (buffer, idx));
+      buffer.erase (idx+1);
+    }
+    if (buffer.size () != 0)
+      fields.push_back (buffer);
+    return RecordFactory::create (fields);
+    */
   }
 
 public:
@@ -37,7 +52,7 @@ public:
   
   RecordPtr nextRecord () {
     assert (!eor ());
-    const ByteBuffer & buffer = reader->getData ();
+    ByteBuffer buffer = reader->getData ();
     return parseBufferToRecord (buffer);
   }
 

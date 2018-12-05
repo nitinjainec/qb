@@ -150,6 +150,21 @@ public:
     return _capacity;
   }
 
+  /* Returns index of new line char "\n"
+   */
+  int32_t newLine () const {
+    return find ('\n');
+  }
+
+  int32_t find (const char ch) const {
+    for (int idx = 0; idx < _size; ++idx) {
+      if (*(_cptr.get () + _offset + idx) == ch) {
+	return idx;
+      }
+    }
+    return -1;
+  }
+
   ~ByteBuffer () {
   }
 };
