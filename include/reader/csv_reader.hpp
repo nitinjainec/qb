@@ -43,7 +43,7 @@ public:
     assert (!eod ());
     int idx = buffer.newLine ();
     if (idx != -1) {
-      ByteBuffer result (buffer, idx - 1);
+      ByteBuffer result (buffer, idx);
       buffer.erase (idx + 1);
       return result;
     }

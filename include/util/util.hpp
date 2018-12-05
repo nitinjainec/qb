@@ -32,6 +32,22 @@ namespace util {
     *src += size;
   }
   
+  /* returns random string */
+  std::string randomString (size_t size) {
+    auto randomChar = []() -> char {
+      const char charset[] =
+      "0123456789"
+      "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+      "abcdefghijklmnopqrstuvwxyz";
+      const size_t max_index = (sizeof(charset) - 1);
+      return charset[ rand() % max_index ];
+    };
+    srand (time (NULL));
+    std::string str (size, 0);
+    std::generate_n (str.begin(), size, randomChar);
+    return str;
+  }
+
   namespace linux {
     /* Returns the current resident set size or 0 if the value cannot be read. */
     size_t getCurrentRSS ( )

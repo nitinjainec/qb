@@ -52,6 +52,13 @@ Implementation:
     can be added which process the data in parallel. Same approach can be
     extended to IReader and IWriter class.
 
+TODO:
+  This section covers short comings of the project and future improvements
+
+  - Serailization/De-serialization:
+    Currently this is implemented within the record and is in-efficient. It needs to be factored out into its own
+    library under util. Also, current implemenation is buggy and looses double precision.
+
 Questions:
   - Should output csv file be exact match of input csv?
     Currently, output csv is same as input csv, however the ordering is

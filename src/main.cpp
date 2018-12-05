@@ -22,7 +22,6 @@ void csvToBinary () {
 }
 
 void binaryToCSV () {
-  //IReaderPtr reader (new BinaryReader ("filename.txt"));
   std::vector <std::string> filenames;
   filenames.push_back ("../output/Symbol-ZBM3");
   filenames.push_back ("../output/Symbol-ZNM3");

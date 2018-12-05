@@ -1,3 +1,3 @@
-g++ -std=c++11 -Iinclude/ test/quote.cpp -o output/test/quote
-
-./output/test/quote
+g++ -std=c++11 -Iinclude/ test/main.cpp -o output/test/test
+cd output/test
+./test
