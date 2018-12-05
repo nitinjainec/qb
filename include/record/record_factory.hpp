@@ -48,9 +48,9 @@ class RecordFactory {
 
   static size_t recordSize (const RecordType rt) {
     switch (rt) {
-    case Quote::recordType (): return Quote::size ();
-    case Trade::recordType (): return Trade::size ();
-    case Signal::recordType (): return Signal::size ();
+    case Quote::recordType (): return Quote::ssize ();
+    case Trade::recordType (): return Trade::ssize ();
+    case Signal::recordType (): return Signal::ssize ();
     }
     VSLOG (std::to_string (rt));
     assert (false);

@@ -48,7 +48,7 @@ struct Trade : public Record {
     , condition (NO_COND)
   { strcpy (symbol, symbol_str.c_str ()); }
 
-  static size_t size () {
+  static size_t ssize () {
     return sizeof (RecordType) + Datetime::size () + sizeof (char [5])
       + sizeof (double) + sizeof (char);
   }
@@ -80,7 +80,7 @@ struct Trade : public Record {
     return "TRADE";
   }
   
-  size_t vsize () { return size (); }
+  size_t size () { return ssize (); }
 
   std::string symbolName () {
     return symbol;

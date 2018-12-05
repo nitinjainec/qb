@@ -11,6 +11,9 @@
 #include <util/logger.hpp>
 #include <util/util.hpp>
 
+/*
+ * Class to parse CSV data received from CSVReader
+ */
 class CSVParser : public IParser {
   IReaderPtr reader;
   std::string delimeter;
@@ -18,49 +21,33 @@ class CSVParser : public IParser {
   RecordPtr parseBufferToRecord (ByteBuffer &buffer) {
     StatRecorder sr ("Parsing record from csv");
     std::vector <std::string> fields;
-    for (int idx = buffer.find (',');
-	 idx != -1; idx = buffer.find (',')) {
+    for (int idx = buffer.find (','); idx != -1; idx = buffer.find (',')) {
       fields.push_back (util::trim (std::string (buffer.c_str (), idx)));
       buffer.erase (idx+1);
     }
-    if (buffer.size () != 0)
-      fields.push_back (util::trim (std::string (buffer.c_str (), buffer.size ())));
-
+    fields.push_back (util::trim
+		      (std::string(buffer.c_str (), buffer.size ())));
     return RecordFactory::create (fields);
-
-    /*
-    StatRecorder sr ("Parsing record from csv");
-    std::vector <ByteBuffer> fields;
-    for (int idx = buffer.find (',');
-	 idx != -1; idx = buffer.find (',')) {
-      fields.push_back (ByteBuffer (buffer, idx));
-      buffer.erase (idx+1);
-    }
-    if (buffer.size () != 0)
-      fields.push_back (buffer);
-    return RecordFactory::create (fields);
-    */
   }
 
 public:
-  CSVParser (const IReaderPtr &reader,
-	     const std::string &delimeter = ",")
+  CSVParser (const IReaderPtr &reader, const std::string &delimeter = ",")
     : reader (reader)
     , delimeter (delimeter)
-  {
-    DLOG ("CSVParser constructed");
-  }
-  
+  {}
+
+  /* Parses the data and returns next record */
   RecordPtr nextRecord () {
-    StatRecorder sr ("Parser csv to record");
+    StatRecorder sr ("Parse csv to Record");
     assert (!eor ());
     ByteBuffer buffer = reader->getData ();
     return parseBufferToRecord (buffer);
   }
 
+  /* Returns true when end of record is reached */
   bool eor () {
     return reader->eod ();
   }
 };
 
-#endif
+#endif // __CSV_PARSER_HPP__

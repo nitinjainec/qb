@@ -1,28 +1,29 @@
 Directory structure
-  - include : contains all include file
-  - src     : contains all source file.
+  - include : contains header files.
+  - src     : contains source code.
               TODO: Currently, methods are implemenented within header file.
-              They can be moved in their respective
-	      cc files under src directory.
-  - data    : contains any data file
+                    Move them in their respective source (cpp) files under src.
+  - data    : contains data file such as input file qb.csv
   - test    : contains test cases
+    	      TODO: Currently it has basic test to check for end to end
+	      	    functionality. Add unit test case for each class.
 
 Files:
   - *.sh    : few scripts, comes handy to build and run sources and test cases.
 
 Interfaces:
-  All interfaces (abstract classes) are defined under include/interface.hpp
+  All interfaces (abstract classes) are defined in include/interface.hpp
 
   - IReader    : reads the data. Can be extended to read data from file,
     	       	 database, network and etc.
                  It can also be extended to spawn multiple read threads.
-  - Record     : defines record interface. Can be extended to represent quote,
+  - IRecord    : defines record interface. Can be extended to represent quote,
     	       	 trade and signal.
   - IParser    : parses the data read by IReader and returns an object of type
-    	         Record. It can be extended to parser different types of data as
-		 csv, binary and etc.
-  - IProcessor : process the Record which is parsed by IParser. It then notifies
-    	         the IWriter/s.
+    	         IRecord. It can be extended to parser different types of data
+		 as csv, binary and etc.
+  - IProcessor : process the IRecord which is parsed by IParser. It then
+    	       	 notifies the IWriter/s.
   - IWriter    : writes the record on receiving notification from IProcessor.
     	         Can be extended to write data to file, database, network and
 		 etc. It can be extended to spawn multiple writer threads.
@@ -33,22 +34,22 @@ Interfaces:
 
 Utils:
   Utility function and libraries used within the project are defined under
-  include/util
+  include/util directory.
 
-  - ByteBuffer : Byte buffer implemenation which shared data object and performs
+  - ByteBuffer : byte buffer implemenation which shares data object and performs
        	 	 copy only on write.
-  - Logger     : class to log data. Currently it is very basic and had
-    	         interface which was used only for debugging.
-		 TODO: improve on logging
+  - Logger     : class to log data. Currently it has basic interface and was
+    	       	 used only for debugging.
+		 TODO: improve Logger
   - Datetime   : datetime class to store date upto milliseconds.
     	         TODO: currently date is stored in string format. Optimize it to
-		 use std::chrono lib or at least std::time and millisecond.
+		       use std::chrono lib or std::time and milliseconds.
 
 Implementation:
 
   - Simplicity is considered over efficiency. However, due to modular design
-    efficiency can be easily achieved by just plugging in new class in existing
-    framework. For e.g. Processor is single threaded class, a threaded processor
+    efficiency can be easily achieved by plugging in new concrete class.
+    For e.g. Processor is single threaded class, a threaded processor
     can be added which process the data in parallel. Same approach can be
     extended to IReader and IWriter class.
 
@@ -56,19 +57,18 @@ TODO:
   This section covers short comings of the project and future improvements
 
   - Serailization/De-serialization:
-    Currently this is implemented within the record and is in-efficient. It needs to be factored out into its own
-    library under util. Also, current implemenation is buggy and looses double precision.
+    Currently this is implemented within the record and is in-efficient. It
+    needs to be re-factored into its own library under util. Also, current
+    implemenation is buggy and looses double precision.
 
 Questions:
   - Should output csv file be exact match of input csv?
-    Currently, output csv is same as input csv, however the ordering is
-    different. If maintaing the order was also the requirement then IWriter
-    class needs to be extended to write sequence number before writing the data.
-    Similarly, IReader class needs to be extended to read sequence number and
-    return data in correct sequence.
+    Currently, output csv is similar to input csv, however the ordering is
+    different. If order needs to be maintained then IWriter class can be
+    extended to write sequence number before writing the data.
+    Similarly, IReader class will be extended to read sequence number and return
+    data in correct sequence.
 
   - Statistics?
-    Its not very clear what all statistics needs to be captured. Is it only the
-    total time that needs to captured? For completness only basic time and 
-    memory information is captured.
-
+    It is not clear what all statistics needs to be captured. For completness
+    only basic time and memory information is captured.

@@ -47,7 +47,7 @@ struct Quote : public Record {
     VLOG ("Symbol " + std::string (symbol, sizeof (symbol)));
   }
 
-  static size_t size () {
+  static size_t ssize () {
     return sizeof (RecordType) + Datetime::size () + sizeof (char [5])
       + sizeof (double) + sizeof (double) + sizeof (uint32_t)
       + sizeof (uint32_t);
@@ -88,7 +88,7 @@ struct Quote : public Record {
     return symbol;
   }
 
-  size_t vsize () { return size (); }
+  size_t size () { return ssize (); }
 
   Datetime time;
   char symbol[5];

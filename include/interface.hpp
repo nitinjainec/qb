@@ -6,10 +6,9 @@
 
 #include <util/byte_buffer.hpp>
 
-const int BUFFER_SIZE = 1024;
-
 namespace constants {
-  const int RECORD_SIZE_BYTES = sizeof (int16_t);
+  const int BUFFER_SIZE = 1024;
+  const size_t FILE_BUFFER_SIZE = 1024 * 1024;
 }
 
 /*
@@ -54,7 +53,7 @@ struct Record {
   virtual std::string symbolName () = 0;
 
   /* returns size of the record */
-  virtual size_t vsize () = 0;
+  virtual size_t size () = 0;
 };
 typedef std::shared_ptr<Record> RecordPtr;
 
@@ -114,4 +113,5 @@ public:
   virtual std::string toString () = 0;
 };
 typedef std::shared_ptr<IStat> IStatPtr;
-#endif
+
+#endif // __INTERFACE_HPP__

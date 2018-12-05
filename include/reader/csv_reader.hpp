@@ -9,19 +9,20 @@
 #include <interface.hpp>
 #include <statistics/stat_recorder.hpp>
 
-const size_t CSV_FILE_BUFFER_SIZE = 1024 * 1024;
-
+/*
+ * Reads csv file and returns data line by line
+ */
 class CSVReader : public IReader {
   std::ifstream file;
   ByteBuffer buffer;
 
   void readData () {
     StatRecorder sr ("Reading csv file");
-    DLOG("Reading csv");    
     if (file.eof ())
       return;
 
-    file.read (buffer.toAppend (CSV_FILE_BUFFER_SIZE), CSV_FILE_BUFFER_SIZE);
+    file.read (buffer.toAppend (constants::FILE_BUFFER_SIZE),
+	       constants::FILE_BUFFER_SIZE);
     buffer.appended (file.gcount ());
     DLOG("Read " + std::to_string (buffer.size ()) + " bytes");
   }
@@ -29,12 +30,10 @@ class CSVReader : public IReader {
 public:
   CSVReader (const std::string &filename)
     : file (filename.c_str ())
-    , buffer (CSV_FILE_BUFFER_SIZE)
+    , buffer (2 * constants::FILE_BUFFER_SIZE)
   {
-    if (file.fail ()) {
+    if (file.fail ())
       throw std::runtime_error ("Can not open file: " + filename);
-    }
-    DLOG ("Opened file: " + filename);
     readData ();
   }
   
@@ -42,29 +41,26 @@ public:
   ByteBuffer getData () {
     assert (!eod ());
     int idx = buffer.newLine ();
-    if (idx != -1) {
-      ByteBuffer result (buffer, idx);
-      buffer.erase (idx + 1);
-      return result;
+    if (idx == -1) {
+      if (file.eof ()) {
+	ByteBuffer result (buffer);
+	buffer.erase (buffer.size ());
+	return result;
+      }
+      readData ();
+      return getData ();
     }
     else {
-      if (!file.eof ()) {
-	readData ();
-	return getData ();
-      }
-      ByteBuffer result (buffer);
-      buffer.erase (buffer.size ());
+      ByteBuffer result (buffer, idx);
+      buffer.erase (idx + 1);
       return result;
     }
   }
 
   /* Returns true for end of data */
   bool eod () {
-    if (buffer.size () != 0)
-      return false;
-    readData ();
     if (buffer.size () == 0)
-      assert (file.eof ());
+      readData ();
     return buffer.size () == 0;
   }
 

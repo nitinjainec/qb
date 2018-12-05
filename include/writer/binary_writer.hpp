@@ -10,7 +10,7 @@
 
 class BinaryWriter : public IWriter {
   std::ofstream file;
-  char buffer [BUFFER_SIZE];
+  char buffer [constants::BUFFER_SIZE];
   int32_t idx;
 
   void flush () {

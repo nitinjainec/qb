@@ -8,26 +8,26 @@
 #include <util/logger.hpp>
 #include <reader/binary_reader.hpp>
 
-
+/*
+ * Class to reads data from multiple binary file sequentially.
+ */
 class BinaryReaders : public IReader {
   std::vector <IReaderPtr> _readers;
   int _idx;
   IReaderPtr _current_reader;
 
 public:
-  BinaryReaders (const std::vector <std::string> filenames)
+  BinaryReaders (const std::vector <std::string> &filenames)
     : _idx (-1)
   {
     for (int i = 0; i < filenames.size (); ++i) {
       const std::string &filename = filenames [i];
       IReaderPtr reader (new BinaryReader (filename));
       _readers.push_back (reader);
-      _idx = 0;
-      _current_reader = _readers [_idx];
     }
   }
 
-  /* Returns binary data */
+  /* Returns binary data sequentially from each reader */
   ByteBuffer getData () {
     assert (!eod ());
     return _current_reader->getData ();
@@ -42,6 +42,5 @@ public:
     _current_reader = _readers[_idx];
     return _current_reader->eod ();
   }
-  
 };
-#endif
+#endif // __BINARY_READERS_HPP__

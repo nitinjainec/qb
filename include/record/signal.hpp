@@ -38,7 +38,7 @@ struct Signal : public Record {
     , code (code)
   { strcpy (symbol, symbol_str.c_str ()); }
   
-  static size_t size () {
+  static size_t ssize () {
     return sizeof (RecordType) + Datetime::size () + sizeof (char[5])
       + sizeof (double) + sizeof (uint32_t);
   }
@@ -68,7 +68,7 @@ struct Signal : public Record {
     return "SIGNAL";
   }
 
-  size_t vsize () { return size (); }
+  size_t size () { return ssize (); }
  
   std::string symbolName () {
     return symbol;
