@@ -1,6 +1,7 @@
 #ifndef __BYTE_BUFFER_HPP__
 #define __BYTE_BUFFER_HPP__
 
+#include <assert.h>
 #include <memory>
 #include <string.h>
 
@@ -101,6 +102,10 @@ public:
     return append (buffer._cptr.get () + buffer._offset, buffer._size);
   }
 
+  ByteBuffer& append (const char ch) {
+    return append (&ch, sizeof (ch));
+  }  
+  
   /* 
    * Returns char * to copy given size of data
    * Saves extra copy of data while reading from source.

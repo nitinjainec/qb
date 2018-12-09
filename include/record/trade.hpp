@@ -85,6 +85,22 @@ struct Trade : public Record {
   std::string symbolName () {
     return symbol;
   }
+
+  Serializer& serialize (Serializer &sr) const {
+    sr << time;
+    sr.serialize (symbol, sizeof (symbol));
+    sr << price;
+    sr << condition;
+    return sr;
+  }
+
+  Serializer& deSerialize (Serializer &sr) {
+    sr >> time;
+    sr.deSerialize (symbol, sizeof (symbol));
+    sr >> price;
+    sr >> condition;
+    return sr;    
+  }
   
   Datetime time;
   char symbol[5];

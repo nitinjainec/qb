@@ -36,6 +36,18 @@ struct Datetime {
   static size_t size () {
     return sizeof (_datetime);
   }
+
+  /* serialize the record */
+  Serializer& serialize (Serializer& sr) const {
+    sr.serialize (_datetime, sizeof (_datetime));
+    return sr;
+  }
+
+  /* deserialize the record */
+  Serializer& deSerialize (Serializer& sr) {
+    sr.deSerialize (_datetime, sizeof (_datetime));
+    return sr;
+  }
 };
 
 #endif

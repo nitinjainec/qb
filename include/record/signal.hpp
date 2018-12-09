@@ -69,11 +69,27 @@ struct Signal : public Record {
   }
 
   size_t size () { return ssize (); }
- 
+
   std::string symbolName () {
     return symbol;
   }
+  
+  Serializer& serialize (Serializer &sr) const {
+    sr << time;
+    sr.serialize (symbol, sizeof (symbol));
+    sr << value;
+    sr << code;
+    return sr;
+  }
 
+  Serializer& deSerialize (Serializer &sr) {
+    sr >> time;
+    sr.deSerialize (symbol, sizeof (symbol));
+    sr >> value;
+    sr >> code;
+    return sr;
+  }
+  
   Datetime time;
   char symbol[5];
   double value;

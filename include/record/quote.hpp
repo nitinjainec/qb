@@ -90,6 +90,26 @@ struct Quote : public Record {
 
   size_t size () { return ssize (); }
 
+  Serializer &serialize (Serializer &sr) const {
+    sr << time;
+    sr.serialize (symbol, sizeof (symbol));
+    sr << bid;
+    sr << ask;
+    sr << bsize;
+    sr << asize;
+    return sr;
+  }
+
+  Serializer &deSerialize (Serializer &sr) {
+    sr >> time;
+    sr.deSerialize (symbol, sizeof (symbol));
+    sr >> bid;
+    sr >> ask;
+    sr >> bsize;
+    sr >> asize;
+    return sr;
+  }
+
   Datetime time;
   char symbol[5];
   double bid;

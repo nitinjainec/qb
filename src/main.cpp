@@ -2,6 +2,7 @@
 
 #include <reader/binary_readers.hpp>
 #include <reader/csv_reader.hpp>
+#include <reader/sequential_binary_readers.hpp>
 #include <record_factory/binary_record_factory.hpp>
 #include <record_factory/csv_record_factory.hpp>
 #include <parser/binary_parser.hpp>
@@ -11,6 +12,7 @@
 #include <util/logger.hpp>
 #include <writer/binary_writer.hpp>
 #include <writer/binary_writers.hpp>
+#include <writer/sequential_binary_writers.hpp>
 #include <writer/csv_writer.hpp>
 
 
@@ -23,7 +25,7 @@ void csvToBinary () {
   CSVRecordFactoryPtr factory (new CSVRecordFactory ());
   IParserPtr parser (new CSVParser (reader, factory));
   IProcessorPtr processor (new Processor (parser));
-  IWriterPtr writer (new BinaryWriters (OUTPUT_DIR + FILE_PREFIX));
+  IWriterPtr writer (new SequentialBinaryWriters (OUTPUT_DIR + FILE_PREFIX));
 
   processor->registerWriter (writer);
   processor->process ();
@@ -31,7 +33,7 @@ void csvToBinary () {
 
 void binaryToCSV () {
   std::vector <std::string> filenames = util::linux::listDirectory (OUTPUT_DIR, FILE_PREFIX);
-  IReaderPtr reader (new BinaryReaders (filenames));
+  IReaderPtr reader (new SequentialBinaryReaders (filenames));
   BinaryRecordFactoryPtr factory (new BinaryRecordFactory ());  
   IParserPtr parser (new BinaryParser (reader, factory));
   IProcessorPtr processor (new Processor (parser));

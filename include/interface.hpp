@@ -5,6 +5,7 @@
 #include <memory>
 
 #include <util/byte_buffer.hpp>
+#include <util/serializer.hpp>
 
 namespace constants {
   const size_t FILE_BUFFER_SIZE = 1024 * 1024; // 1 MB
@@ -53,6 +54,12 @@ struct Record {
 
   /* returns size of the record */
   virtual size_t size () = 0;
+
+  /* serialize the record */
+  virtual Serializer &serialize (Serializer &) const = 0;
+
+  /* deserialize the record */
+  virtual Serializer &deSerialize (Serializer &) = 0;
 };
 typedef std::shared_ptr<Record> RecordPtr;
 
