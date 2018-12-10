@@ -11,22 +11,8 @@
 struct Signal : public Record {
   Signal () {}
   Signal (const ByteBuffer &buffer) {
-    using util::copy;
-    VLOG ("Creating Signal from ByteBuffer");
-    assert (buffer.size () >= size ());
-
-    const char *ch = buffer.c_str ();
-    RecordType rt = static_cast <RecordType> (*ch);
-    assert (rt == SIGNAL);
-    ch += sizeof (RecordType);
-
-    copy (symbol, &ch, sizeof (symbol));
-    VLOG ("symbol: " + std::string (symbol));
-    time = ch;
-    VLOG ("time: " + time.toString());
-    ch += time.size ();
-    copy ((char *)&value, &ch, sizeof (value));
-    copy ((char *)&code, &ch, sizeof (code));
+    Serializer sr (buffer);
+    deSerialize (sr);
   }
 
   Signal (const std::string &time,
@@ -75,6 +61,7 @@ struct Signal : public Record {
   }
   
   Serializer& serialize (Serializer &sr) const {
+    sr << static_cast<uint32_t>(recordType ());
     sr << time;
     sr.serialize (symbol, sizeof (symbol));
     sr << value;
@@ -83,6 +70,9 @@ struct Signal : public Record {
   }
 
   Serializer& deSerialize (Serializer &sr) {
+    uint32_t rt;
+    sr >> rt;
+    assert (rt == recordType ());
     sr >> time;
     sr.deSerialize (symbol, sizeof (symbol));
     sr >> value;

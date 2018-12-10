@@ -1,4 +1,5 @@
 #include <util/logger.hpp>
+#include <util/serializer.hpp>
 #include <parser/csv_parser.hpp>
 #include <processor/processor.hpp>
 #include <reader/csv_reader.hpp>
@@ -30,7 +31,9 @@ class QuoteTest : public UnitTest {
     RecordPtr record_a = parser->nextRecord ();
     assert (parser->eor ());
 
-    ByteBuffer buffer = record_a->toByteBuffer ();
+    Serializer sr;
+    sr << *record_a;
+    ByteBuffer buffer = sr.toByteBuffer ();
 
     BinaryRecordFactory bfactory;
     assert (bfactory.canCreateRecord (buffer));

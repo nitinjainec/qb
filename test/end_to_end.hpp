@@ -7,9 +7,11 @@
 #include <processor/processor.hpp>
 #include <reader/binary_readers.hpp>
 #include <reader/csv_reader.hpp>
+#include <reader/sequential_binary_readers.hpp>
 #include <record_factory/csv_record_factory.hpp>
 #include <writer/binary_writers.hpp>
 #include <writer/csv_writer.hpp>
+#include <writer/sequential_binary_writers.hpp>
 
 #include "unit_test.hpp"
 
@@ -21,17 +23,14 @@ class EndToEndTest : public UnitTest {
     CSVRecordFactoryPtr factory (new CSVRecordFactory ());
     IParserPtr parser (new CSVParser (reader, factory));
     IProcessorPtr processor (new Processor (parser));
-    IWriterPtr writer (new BinaryWriters (_prefix));
+    IWriterPtr writer (new SequentialBinaryWriters (_prefix));
     processor->registerWriter (writer);
     processor->process ();
   }
 
   void binaryToCSV () {
-    std::vector <std::string> filenames;
-    filenames.push_back (_prefix + "ZBM3");
-    filenames.push_back (_prefix + "ZNM3");
-
-    IReaderPtr reader (new BinaryReaders (filenames));
+    std::vector <std::string> filenames = util::linux::listDirectory (".", _prefix);
+    IReaderPtr reader (new SequentialBinaryReaders (filenames));
     BinaryRecordFactoryPtr factory (new BinaryRecordFactory ());
     IParserPtr parser (new BinaryParser (reader, factory));
     IProcessorPtr processor (new Processor (parser));

@@ -13,22 +13,8 @@ struct Trade : public Record {
   Trade () {}
 
   Trade (const ByteBuffer &buffer) {
-    using util::copy;
-    VLOG ("Creating Trade from ByteBuffer");
-    VLOG ("buffer size: " + std::to_string (buffer.size ()));
-    VLOG ("required size: " + std::to_string (size ()));
-    assert (buffer.size () >= size ());
-
-    const char *ch = buffer.c_str ();
-    RecordType rt = static_cast <RecordType> (*ch);
-    assert (rt == TRADE);
-    ch += sizeof (RecordType);
-
-    copy (symbol, &ch, sizeof (symbol));
-    time = ch;
-    ch += time.size ();
-    copy ((char *)&price, &ch, sizeof (price));
-    copy ((char *)&condition, &ch, sizeof (condition));
+    Serializer sr (buffer);
+    deSerialize (sr);
   }
 
   Trade (const std::string &time,
@@ -87,6 +73,7 @@ struct Trade : public Record {
   }
 
   Serializer& serialize (Serializer &sr) const {
+    sr << static_cast<uint32_t>(recordType ());
     sr << time;
     sr.serialize (symbol, sizeof (symbol));
     sr << price;
@@ -95,6 +82,9 @@ struct Trade : public Record {
   }
 
   Serializer& deSerialize (Serializer &sr) {
+    uint32_t rt;
+    sr >> rt;
+    assert (rt == recordType ());
     sr >> time;
     sr.deSerialize (symbol, sizeof (symbol));
     sr >> price;

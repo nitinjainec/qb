@@ -12,22 +12,8 @@ struct Quote : public Record {
   Quote () {}
 
   Quote (const ByteBuffer &buffer) {
-    using util::copy;
-    VLOG ("Creating Quote from ByteBuffer");
-    assert (buffer.size () >= size ());
-
-    const char *ch = buffer.c_str ();
-    RecordType rt = static_cast <RecordType> (*ch);
-    assert (rt == QUOTE);
-    ch += sizeof (RecordType);
-
-    copy (symbol, &ch, sizeof (symbol));
-    time = ch;
-    ch += time.size ();
-    copy ((char *)&bid, &ch, sizeof (bid));
-    copy ((char *)&ask, &ch, sizeof (ask));
-    copy ((char *)&bsize, &ch, sizeof (bsize));
-    copy ((char *)&asize, &ch, sizeof (asize));
+    Serializer sr (buffer);
+    deSerialize (sr);
   }
 
   Quote (const std::string &time,
@@ -91,6 +77,7 @@ struct Quote : public Record {
   size_t size () { return ssize (); }
 
   Serializer &serialize (Serializer &sr) const {
+    sr << static_cast<uint32_t>(recordType ());
     sr << time;
     sr.serialize (symbol, sizeof (symbol));
     sr << bid;
@@ -101,6 +88,9 @@ struct Quote : public Record {
   }
 
   Serializer &deSerialize (Serializer &sr) {
+    uint32_t rt;
+    sr >> rt;
+    assert (rt == recordType ());
     sr >> time;
     sr.deSerialize (symbol, sizeof (symbol));
     sr >> bid;

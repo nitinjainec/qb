@@ -42,7 +42,7 @@ public:
   friend Serializer &operator >> (Serializer &, ByteBuffer &);
   friend Serializer &operator >> (Serializer &, std::string &);
   template <typename T>
-  friend Serializer &operator << (Serializer &, T&);
+  friend Serializer &operator >> (Serializer &, T&);
 };
 
 Serializer& Serializer::serialize (const char *ch, const size_t size) {

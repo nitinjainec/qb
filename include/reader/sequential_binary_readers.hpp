@@ -23,11 +23,11 @@ class SequentialBinaryReaders : public IReader {
   }
 
   void addToMap (const IReaderPtr &reader, ByteBuffer &buffer) {
+    if (buffer.size () == 0 && reader->eod ())
+      return;
     if (buffer.size () < sizeof (uint32_t) + sizeof (size_t)) {
-      if (reader->eod ())
-	assert (buffer.size () == 0);
-      else
-	buffer.append (reader->getData ());
+      assert (!reader->eod ());
+      buffer.append (reader->getData ());
     }
     Serializer sr (buffer);
     uint32_t id;

@@ -28,7 +28,7 @@ public:
 
   /* Process the data and notify registered writers */
   void process () {
-    DLOG ("started processing csv to binary");
+    DLOG ("started processing data");
     StatRecorder sr ("Processing");
     while (!parser->eor ()) {
       VLOG ("Getting next record");

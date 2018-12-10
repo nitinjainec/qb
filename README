@@ -47,6 +47,8 @@ Utils:
   - Datetime   : datetime class to store date upto milliseconds.
     	         TODO: currently date is stored in string format. Optimize it to
 		       use std::chrono lib or std::time and milliseconds.
+  - Serailizer : serializer library. Currently, it is basic and serializes data
+    	       	 required by the project.
 
 Implementation:
 
@@ -56,22 +58,3 @@ Implementation:
     can be added which process the data in parallel. Same approach can be
     extended to IReader and IWriter class.
 
-TODO:
-  This section covers short comings of the project and future improvements
-
-  - Serailization/De-serialization:
-    Currently this is implemented within the record and is in-efficient. It
-    needs to be re-factored into its own library under util. Also, current
-    implemenation is buggy and looses double precision.
-
-Questions:
-  - Should output csv file be exact match of input csv?
-    Currently, output csv is similar to input csv, however the ordering is
-    different. If order needs to be maintained then IWriter class can be
-    extended to write sequence number before writing the data.
-    Similarly, IReader class will be extended to read sequence number and return
-    data in correct sequence.
-
-  - Statistics?
-    It is not clear what all statistics needs to be captured. For completness
-    only basic time and memory information is captured.
