@@ -53,6 +53,25 @@ class MemoryStat : public IStat {
       stat.maxPeakSize = peakSize;	
   }
 
+  std::string humanReadable (size_t size) {
+    static std::string units [] = 
+      {
+	"Byte",
+	"KB",
+	"MB",
+	"GB"
+	"TB",
+	"PB"
+      };
+    uint32_t unit = 0;
+    while (size > 1024) {
+      size /= 1024;
+      ++unit;
+    }
+    assert (unit < sizeof (units));
+    return std::to_string (size) + " " + units [unit];
+  }
+
 public:
   static IStatPtr getInstance () {
     if (!instance)
@@ -84,15 +103,15 @@ public:
   std::string toString () {
     std::stringstream ss;
 
-    ss << "--------Memory Statistic--------\n";
+    ss << "\n--------Memory Statistic--------\n";
     for (auto &kv : _key_to_stat) {
       Stat &s = kv.second;
-      ss << "    " << kv.first << " bytes\n";
-      ss << "        Count: " << s.count << " bytes\n";
-      ss << "        Max current size increase: " << s.maxCurrentSizeInc << " bytes\n";
-      ss << "        Max peak size increase: " << s.maxPeakSizeInc << " bytes\n";
-      ss << "        Max current size: " << s.maxCurrentSize << " bytes\n";
-      ss << "        Max peak size: " << s.maxPeakSize << " bytes\n\n";
+      ss << "    " << kv.first << "\n";
+      ss << "        Count: " << s.count << "\n";
+      ss << "        Max current size increase: " << humanReadable (s.maxCurrentSizeInc) << "\n";
+      ss << "        Max peak size increase: " << humanReadable (s.maxPeakSizeInc) << "\n";
+      ss << "        Max current size: " << humanReadable (s.maxCurrentSize) << "\n";
+      ss << "        Max peak size: " << humanReadable (s.maxPeakSize) << "\n\n";
     }
     return ss.str ();
   }
