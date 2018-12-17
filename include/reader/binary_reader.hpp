@@ -41,6 +41,8 @@ public:
 
   /* Returns chunk of data of max size FILE_BUFFER_SIZE */
   ByteBuffer getData () {
+    if (buffer.size () == 0)
+      readData ();
     assert (!eod ());
     ByteBuffer result (buffer);
     buffer.erase (buffer.size ());
